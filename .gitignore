@@ -1,0 +1,22 @@
+coc
+valet
+
+# nvim
+autoload
+plugged
+undo
+undo/*
+.NERDTreeBookmarks
+.netrwhist
+
+# tmux
+resurrect
+plugins
+*.log
+
+# zsh
+config.zsh
+.zcompdump
+.zcompcache
+.zsh_history
+.zsh_sessions

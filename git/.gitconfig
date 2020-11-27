@@ -1,0 +1,23 @@
+[user]
+	name = Rasmy Nguyen
+	email = rtnguyen87@gmail.com
+[core]
+	editor = nvim
+	excludesFile = /Users/raz/.config/git/.gitignore
+[color]
+	ui = true
+[alias]
+	logg = log --oneline --graph --decorate --all --abbrev-commit
+	co = checkout
+	ci = commit
+	br = branch
+	dfs = diff --staged
+	st = status
+	sw = switch
+	re = restore
+[credential]
+	helper = osxkeychain
+[submodule]
+	recurse = true
+[init]
+	defaultBranch = main
