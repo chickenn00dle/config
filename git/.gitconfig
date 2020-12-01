@@ -3,7 +3,7 @@
 	email = rtnguyen87@gmail.com
 [core]
 	editor = nvim
-	excludesFile = /Users/raz/.config/git/.gitignore
+	excludesFile = ~/.config/git/.gitignore
 [color]
 	ui = true
 [alias]

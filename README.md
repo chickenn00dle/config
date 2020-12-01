@@ -7,11 +7,11 @@ Config files for various tools I use daily. Feel free to leave feedback or sugge
 ```
 cd ~
 git clone https://github.com/chickenn00dle/config.git .config
-source ~/.config/zsh/.zshenv
-source ~/.config/zsh/.zshrc
 ln -s ~/.config/zsh/.zshenv ~/.zshenv
 ln -s ~/.config/tmux/.tmux.conf ~/.tmux.conf
 ln -s ~/.config/git/.gitconfig ~/.gitconfig
+source ~/.config/zsh/.zshenv
+source ~/.config/zsh/.zshrc
 ```
 
 ## Getting Started
@@ -30,7 +30,7 @@ You will first need to [install NeoVim](https://neovim.io/). You can also instal
 
 ### GIT
 
-Refer to [the git docs](https://git-scm.com/docs/git-config) for adding customizations.
+You will need to change the name and email values in `~/.config/git/.gitconfig`. You can refer to [the git docs](https://git-scm.com/docs/git-config) for adding customizations.
 
 ## Author
 
