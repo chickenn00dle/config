@@ -11,12 +11,14 @@ setopt histreduceblanks
 setopt histverify
 setopt correct
 setopt correctall
+setopt vi
 
 #############
 #Key Bindings
 #############
 bindkey '^[[A' up-line-or-search
 bindkey '^[[B' down-line-or-search
+bindkey -M viins 'jj' vi-cmd-mode
 
 ########
 #History

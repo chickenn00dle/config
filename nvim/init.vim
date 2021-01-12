@@ -31,6 +31,7 @@ set showcmd
 set showmode
 set showmatch
 set title
+set ttyfast
 set updatetime=300
 set visualbell
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*/node_modules/*
@@ -69,13 +70,6 @@ set noswapfile
 set undofile
 set undodir="$XDG_CONFIG_HOME/nvim/undo"
 set undolevels=9999
-
-""""""""""""
-"Performance
-""""""""""""
-set lazyredraw
-set nocursorline
-set ttyfast
 
 """""""""""""
 "Autocommands
@@ -162,6 +156,8 @@ let g:ale_php_phpcs_standard = "WordPress"
 let g:ale_php_phpcs_use_global = 1
 let g:ale_sign_error = '✘'
 let g:ale_sign_warning = '⚠'
+nmap <silent> <leader>an :ALENext<cr>
+nmap <silent> <leader>ap :ALEPrevious<cr>
 
 """""""
 "CoCVim
