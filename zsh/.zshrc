@@ -41,7 +41,7 @@ alias rmd='rm -Rf'
 alias df='df -h'
 alias du='du -h'
 alias mkdir='mkdir -p'
-alias -s log='tail -f'
+alias -s log='tail -f -n 50'
 alias topp='top -o cpu -s 3'
 
 #######
