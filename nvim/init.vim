@@ -275,6 +275,7 @@ let g:vdebug_options['port']=9001
 let g:vdebug_options['timeout']=30
 let g:vdebug_options['simplified_status']=0
 let g:vdebug_options['watch_window_style']='expanded' "Set to compact when not dual monitoring
+let g:vdebug_options['path_maps']={}
 if !exists('g:vdebug_keymap')
 	let g:vdebug_keymap={}
 endif
