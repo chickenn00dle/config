@@ -59,7 +59,7 @@ set ignorecase
 set incsearch
 set path=$PWD/**
 set smartcase
-set grepprg=grep\ -nrE\ --exclude-dir=.git\ --exclude-dir=dist\ --exclude-dir=i18n\ --exclude-dir=languages\ --exclude-dir=node_modules\ --exclude-dir=vendor
+set grepprg=grep\ -nrE\ --exclude-dir=.git\ --exclude-dir=dist\ --exclude-dir=i18n\ --exclude-dir=languages\ --exclude-dir=node_modules\ --exclude-dir=vendor\ --exclude-dir=docker
 set grepformat+=%f
 
 """""
@@ -196,7 +196,6 @@ let g:gutentags_project_root = [
 	\ 'package.json',
 	\ 'composer.json',
 	\ '.git',
-	\ 'main.c'
 	\ ]
 let g:gutentags_cache_dir = expand('~/.cache/nvim/ctags/')
 let g:gutentags_ctags_exclude = [
@@ -275,7 +274,6 @@ let g:vdebug_options['port']=9001
 let g:vdebug_options['timeout']=30
 let g:vdebug_options['simplified_status']=0
 let g:vdebug_options['watch_window_style']='expanded' "Set to compact when not dual monitoring
-let g:vdebug_options['path_maps']={}
 if !exists('g:vdebug_keymap')
 	let g:vdebug_keymap={}
 endif

@@ -21,3 +21,6 @@
 	recurse = true
 [init]
 	defaultBranch = main
+[filter "gitignore"]
+	clean = "sed '/\"gitignore$/d'"
+	smudge = cat
