@@ -4,6 +4,8 @@ Config files for various tools I use daily. Feel free to leave feedback or sugge
 
 ## Installation
 
+The following assumes you are running `zsh` on MacOS.
+
 ```
 cd ~
 git clone https://github.com/chickenn00dle/config.git .config

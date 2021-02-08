@@ -1,10 +1,8 @@
 """""""""""""""
 "Initialization
 """""""""""""""
-filetype off
 syntax on
 filetype plugin indent on
-set modelines=0
 let mapleader=','
 
 """"""""
@@ -12,6 +10,7 @@ let mapleader=','
 """"""""
 set backspace=indent,eol,start
 set clipboard=unnamed
+set completeopt=menu,menuone,noinsert,noselect
 set encoding=utf8
 set foldmethod=indent
 set guifont=Menlo\ Regular:h18
@@ -19,6 +18,7 @@ set hidden
 set list
 set listchars=tab:→\ ,trail:•
 set matchpairs+=<:>
+set modelines=0
 set mouse=a
 set noerrorbells
 set nowritebackup
@@ -42,14 +42,13 @@ set wrap
 """""""""""""""""
 "Tabs/Indentation
 """""""""""""""""
-set autoindent 
+set autoindent
 set copyindent
 set noexpandtab
 set shiftround
 set shiftwidth=4
 set softtabstop=4
 set tabstop=4
-set pastetoggle=<F2>
 
 """""""
 "Search
@@ -112,26 +111,23 @@ command! BC execute '%bd|e#|bd#|normal! `"'
 """"""""
 "Plugins
 """"""""
-
 if empty(glob("$XDG_CONFIG_HOME/nvim/autoload/plug.vim"))
-  silent !curl -fLo $XDG_CONFIG_HOME/nvim/autoload/plug.vim --create-dirs
-    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+	silent !curl -fLo $XDG_CONFIG_HOME/nvim/autoload/plug.vim --create-dirs
+				\ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+	au VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
 call plug#begin("$XDG_CONFIG_HOME/nvim/plugged")
 Plug 'dense-analysis/ale'
 Plug 'drewtempelmeyer/palenight.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'ludovicchabant/vim-gutentags'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'preservim/nerdtree'
-Plug 'rizzatti/dash.vim'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'tomtom/tcomment_vim'
 Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-rhubarb'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-vinegar'
-Plug 'tpope/vim-rhubarb'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'vim-scripts/matchit.zip'
@@ -139,110 +135,48 @@ Plug 'vim-vdebug/vdebug'
 call plug#end()
 
 if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
-	autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+	au VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
 """"
 "Ale
 """"
+let g:ale_completion_enabled = 1
+let g:ale_completion_autoimport = 1
+let g:ale_fix_on_save = 0
+let g:ale_linters = {
+	\ 'javascript': ['eslint'],
+	\ 'php': ['intelephense', 'phpcs']
+\ }
+let g:ale_fixers = { 'javascript': ['eslint'] }
+let g:ale_php_phpcs_standard = "WordPress"
+let g:ale_sign_error = '✘'
+let g:ale_sign_info = 'i'
+let g:ale_sign_warning = '⚠'
+let g:ale_echo_msg_error_str = '✘'
+let g:ale_echo_msg_info_str = 'i'
+let g:ale_echo_msg_warning_str = '⚠'
+let g:ale_echo_msg_format = '%s [%linter%]'
+inoremap <silent><expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <silent><expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<C-h>"
+inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+nmap <silent> <leader>n :ALENext<CR>
+nmap <silent> <leader>p :ALEPrevious<cR>
+nmap gd :ALEGoToDefinition<CR>
+nmap gr :ALEFindReferences<CR>
+nmap I :ALEHover<CR>
 highlight ALEErrorSign ctermbg=NONE ctermfg=red
 highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
-let g:ale_fix_on_save = 1
-"let g:ale_fixers = {'php': ['phpcbf'], 'javascript': ['eslint']}
-let g:ale_linters = {'php': ['phpcs'], 'javascript': ['eslint']}
-"let g:ale_php_phpcbf_standard = "WordPress"
-"let g:ale_php_phpcbf_use_global = 1
-let g:ale_php_phpcs_standard = "WordPress"
-let g:ale_php_phpcs_use_global = 1
-let g:ale_sign_error = '✘'
-let g:ale_sign_warning = '⚠'
-nmap <silent> <leader>an :ALENext<cr>
-nmap <silent> <leader>ap :ALEPrevious<cr>
 
-"""""""
-"CoCVim
-"""""""
-inoremap <silent><expr> <TAB>
-	\ pumvisible() ? "\<C-n>" :
-	\ <SID>check_back_space() ? "\<TAB>" :
-	\ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-function! s:check_back_space() abort
-	let col = col('.') - 1
-	return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-inoremap <silent><expr> <CR> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>"
-inoremap <silent><expr> <C-space> coc#refresh()
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-function! s:show_documentation()
-	if (index(['vim','help'], &filetype) >= 0)
-		execute 'h '.expand('<cword>')
-	else
-		call CocAction('doHover')
-	endif
-endfunction
+"""""""""
+"Deoplete
+"""""""""
+let g:deoplete#enable_at_startup = 1
 
 """"
 "FZF
 """"
 map <C-p> :Files<ENTER>
-
-""""""""""
-"Gutentags
-""""""""""
-let g:gutentags_add_default_project_roots = 0
-let g:gutentags_project_root = [
-	\ 'wp-config.php',
-	\ 'package.json',
-	\ 'composer.json',
-	\ '.git',
-	\ ]
-let g:gutentags_cache_dir = expand('~/.cache/nvim/ctags/')
-let g:gutentags_ctags_exclude = [
-	\ '*.git',
-	\ '*.svg',
-	\ '*.hg',
-	\ '*/tests/*',
-	\ 'build',
-	\ 'dist',
-	\ 'bin',
-	\ 'node_modules',
-	\ 'cache',
-	\ 'docs',
-	\ 'bundle',
-	\ 'vendor',
-	\ '*.md',
-	\ '*-lock.json',
-	\ '*.lock',
-	\ '*bundle*.js',
-	\ '*build*.js',
-	\ '.*rc*',
-	\ '*.json',
-	\ '*.min.*',
-	\ '*.map',
-	\ '*.bak',
-	\ '*.zip',
-	\ '*.tmp',
-	\ '*.cache',
-	\ 'tags*',
-	\ '*.css',
-	\ '*.less',
-	\ '*.scss',
-	\ '*.exe', '*.dll',
-	\ '*.mp3', '*.ogg', '*.flac',
-	\ '*.swp', '*.swo',
-	\ '*.bmp', '*.gif', '*.ico', '*.jpg', '*.png',
-	\ '*.rar', '*.zip', '*.tar', '*.tar.gz', '*.tar.xz', '*.tar.bz2',
-	\ '*.pdf', '*.doc', '*.docx', '*.ppt', '*.pptx',
-	\ ]
-let g:gutentags_ctags_extra_args = [
-	\ '--tag-relative=yes',
-	\ '--fields=+ailmnS',
-	\ ]
-let g:gutentags_generate_on_new = 1
-let g:gutentags_generate_on_missing = 1
-let g:gutentags_generate_on_write = 1
-let g:gutentags_generate_on_empty_buffer = 0
 
 """""""""
 "NerdTree
@@ -295,6 +229,7 @@ highlight DbgCurrentSign ctermbg=none ctermfg=9
 "Vim Airline
 """"""""""""
 let g:airline_theme='minimalist'
+let g:airline#extensions#ale#enabled=1
 let g:airline#extensions#tabline#enabled=1
 let g:airline#extensions#tabline#formatter='unique_tail'
 let g:airline#extensions#tabline#buffers_label=''
