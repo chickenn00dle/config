@@ -107,11 +107,10 @@ if empty(glob("$XDG_CONFIG_HOME/nvim/autoload/plug.vim"))
 endif
 
 call plug#begin("$XDG_CONFIG_HOME/nvim/plugged")
-Plug 'dense-analysis/ale'
 Plug 'drewtempelmeyer/palenight.vim'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'preservim/nerdtree'
-Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins'}
 Plug 'tomtom/tcomment_vim'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb'
@@ -151,34 +150,24 @@ nmap <leader>- <Plug>AirlineSelectPrevTab
 nmap <leader>+ <Plug>AirlineSelectNextTab
 
 """"
-"Ale
+"CoC
 """"
-let g:ale_completion_enabled = 1
-let g:ale_completion_autoimport = 1
-let g:ale_fix_on_save = 0
-let g:ale_linters = {
-	\ 'javascript': ['eslint'],
-	\ 'php': ['intelephense', 'phpcs']
-\ }
-let g:ale_fixers = { 'javascript': ['eslint'] }
-let g:ale_php_phpcs_standard = "WordPress"
-let g:ale_sign_error = '✘'
-let g:ale_sign_info = 'i'
-let g:ale_sign_warning = '⚠'
-let g:ale_echo_msg_error_str = '✘'
-let g:ale_echo_msg_info_str = 'i'
-let g:ale_echo_msg_warning_str = '⚠'
-let g:ale_echo_msg_format = '%s [%linter%]'
-inoremap <silent><expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <silent><expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<C-h>"
-inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-nmap <silent> <leader>n :ALENext<CR>
-nmap <silent> <leader>p :ALEPrevious<cR>
-nmap gd :ALEGoToDefinition<CR>
-nmap gr :ALEFindReferences<CR>
-nmap I :ALEHover<CR>
-highlight ALEErrorSign ctermbg=NONE ctermfg=red
-highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
+inoremap <silent><expr> <Tab>
+	\ pumvisible() ? "\<C-n>" :
+	\ <SID>check_back_space() ? "\<TAB>" :
+	\ coc#refresh()
+inoremap <expr><S-Tab> pumvisible() ? "\<C-p>" : "\<C-h>"
+function! s:check_back_space() abort
+	let col = col('.') - 1
+	return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+if has('nvim')
+	inoremap <silent><expr> <c-space> coc#refresh()
+else
+	inoremap <silent><expr> <c-@> coc#refresh()
+endif
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() :
+	\ "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 """""""""
 "Denite
@@ -215,11 +204,6 @@ function! s:denite_my_settings() abort
 	nnoremap <silent><buffer><expr> <Space>
 		\ denite#do_map('toggle_select').'j'
 endfunction
-
-"""""""""
-"Deoplete
-"""""""""
-let g:deoplete#enable_at_startup = 1
 
 """""""""
 "NerdTree

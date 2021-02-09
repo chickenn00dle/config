@@ -3,6 +3,7 @@ configstore
 
 # nvim
 autoload
+coc
 plugged
 undo
 undo/*
