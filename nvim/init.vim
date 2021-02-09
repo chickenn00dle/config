@@ -21,6 +21,7 @@ set matchpairs+=<:>
 set modelines=0
 set mouse=a
 set noerrorbells
+set noshowmode
 set nowritebackup
 set number
 set scrolloff=999
@@ -28,15 +29,14 @@ set shellcmdflag=-ic
 set signcolumn=yes
 set shortmess+=c
 set showcmd
-set showmode
 set showmatch
+set termguicolors
 set title
-set ttyfast
 set updatetime=300
 set visualbell
-set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*/node_modules/*
 set wildmenu
 set wildmode=longest:full,full
+set winbl=5
 set wrap
 
 """""""""""""""""
@@ -58,8 +58,6 @@ set ignorecase
 set incsearch
 set path=$PWD/**
 set smartcase
-set grepprg=grep\ -nrE\ --exclude-dir=.git\ --exclude-dir=dist\ --exclude-dir=i18n\ --exclude-dir=languages\ --exclude-dir=node_modules\ --exclude-dir=vendor\ --exclude-dir=docker
-set grepformat+=%f
 
 """""
 "Undo
@@ -69,15 +67,6 @@ set noswapfile
 set undofile
 set undodir="$XDG_CONFIG_HOME/nvim/undo"
 set undolevels=9999
-
-"""""""""""""
-"Autocommands
-"""""""""""""
-"Refresh buffers
-au FocusGained,BufEnter * :silent! !
-"Open Quickfix window
-au QuickFixCmdPost [^l]* nested cwindow
-au QuickFixCmdPost    l* nested lwindow
 
 """""""""
 "Mappings
@@ -120,8 +109,8 @@ endif
 call plug#begin("$XDG_CONFIG_HOME/nvim/plugged")
 Plug 'dense-analysis/ale'
 Plug 'drewtempelmeyer/palenight.vim'
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'preservim/nerdtree'
+Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'tomtom/tcomment_vim'
 Plug 'tpope/vim-fugitive'
@@ -137,6 +126,29 @@ call plug#end()
 if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
 	au VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
+
+""""""""""""
+"Airline
+""""""""""""
+let g:airline_theme='minimalist'
+let g:airline#extensions#ale#enabled=1
+let g:airline#extensions#tabline#enabled=1
+let g:airline#extensions#tabline#formatter='unique_tail'
+let g:airline#extensions#tabline#buffers_label=''
+let g:airline#extensions#tabline#tabs_label=''
+let g:airline#extensions#tabline#buffer_idx_mode=1
+nmap <leader>1 <Plug>AirlineSelectTab1
+nmap <leader>2 <Plug>AirlineSelectTab2
+nmap <leader>3 <Plug>AirlineSelectTab3
+nmap <leader>4 <Plug>AirlineSelectTab4
+nmap <leader>5 <Plug>AirlineSelectTab5
+nmap <leader>6 <Plug>AirlineSelectTab6
+nmap <leader>7 <Plug>AirlineSelectTab7
+nmap <leader>8 <Plug>AirlineSelectTab8
+nmap <leader>9 <Plug>AirlineSelectTab9
+nmap <leader>0 <Plug>AirlineSelectTab0
+nmap <leader>- <Plug>AirlineSelectPrevTab
+nmap <leader>+ <Plug>AirlineSelectNextTab
 
 """"
 "Ale
@@ -169,14 +181,45 @@ highlight ALEErrorSign ctermbg=NONE ctermfg=red
 highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
 
 """""""""
+"Denite
+"""""""""
+call denite#custom#option( '_', 'auto_resize', 1 )
+call denite#custom#option( '_', 'highlight_matched_char', 'QuickFixLine' )
+call denite#custom#option( '_', 'highlight_matched_range', 'Visual' )
+call denite#custom#option( '_', 'source_names', 'short' )
+call denite#custom#option( '_', 'split', 'floating' )
+call denite#custom#option( '_', 'start_filter', 1 )
+call denite#custom#option( '_', 'vertical_preview', 1 )
+call denite#custom#option( '_', 'winrow', 1 )
+call denite#custom#var( 'buffer', 'date_format', '' )
+call denite#custom#var( 'file/rec', 'command', [
+	\ 'scantree.py', '--path', ':directory',
+	\ "--ignore='.git,node_modules,vendor'"
+\ ] )
+nmap <C-b> :Denite buffer<CR>
+nmap <C-p> :DeniteProjectDir file/rec<CR>
+nnoremap <C-g> :<C-u>Denite grep:. -no-empty<CR>
+nnoremap <C-f> :<C-u>DeniteCursorWord grep:.<CR>
+autocmd FileType denite call s:denite_my_settings()
+function! s:denite_my_settings() abort
+	nnoremap <silent><buffer><expr> <CR>
+		\ denite#do_map('do_action')
+	nnoremap <silent><buffer><expr> d
+		\ denite#do_map('do_action', 'delete')
+	nnoremap <silent><buffer><expr> p
+		\ denite#do_map('do_action', 'preview')
+	nnoremap <silent><buffer><expr> q
+		\ denite#do_map('quit')
+	nnoremap <silent><buffer><expr> i
+		\ denite#do_map('open_filter_buffer')
+	nnoremap <silent><buffer><expr> <Space>
+		\ denite#do_map('toggle_select').'j'
+endfunction
+
+"""""""""
 "Deoplete
 """""""""
 let g:deoplete#enable_at_startup = 1
-
-""""
-"FZF
-""""
-map <C-p> :Files<ENTER>
 
 """""""""
 "NerdTree
@@ -199,18 +242,14 @@ map <C-b> :Bookmark<Space>
 """""""
 "Vdebug
 """""""
-if !exists('g:vdebug_options')
-	let g:vdebug_options={}
-endif
+let g:vdebug_options={}
 let g:vdebug_options['break_on_open']=0
 let g:vdebug_options['ide_key']='raz_xdebug'
 let g:vdebug_options['port']=9001
 let g:vdebug_options['timeout']=30
 let g:vdebug_options['simplified_status']=0
 let g:vdebug_options['watch_window_style']='expanded' "Set to compact when not dual monitoring
-if !exists('g:vdebug_keymap')
-	let g:vdebug_keymap={}
-endif
+let g:vdebug_keymap={}
 let g:vdebug_keymap['run']='<leader>,'
 let g:vdebug_keymap['run_to_cursor']='<Down>'
 let g:vdebug_keymap['step_over']='<Up>'
@@ -224,28 +263,6 @@ highlight DbgBreakptLine ctermbg=none ctermfg=none
 highlight DbgBreakptSign ctermbg=none ctermfg=10
 highlight DbgCurrentLine ctermbg=none ctermfg=none
 highlight DbgCurrentSign ctermbg=none ctermfg=9
-
-""""""""""""
-"Vim Airline
-""""""""""""
-let g:airline_theme='minimalist'
-let g:airline#extensions#ale#enabled=1
-let g:airline#extensions#tabline#enabled=1
-let g:airline#extensions#tabline#formatter='unique_tail'
-let g:airline#extensions#tabline#buffers_label=''
-let g:airline#extensions#tabline#tabs_label=''
-let g:airline#extensions#tabline#buffer_idx_mode = 1
-nmap <leader>1 <Plug>AirlineSelectTab1
-nmap <leader>2 <Plug>AirlineSelectTab2
-nmap <leader>3 <Plug>AirlineSelectTab3
-nmap <leader>4 <Plug>AirlineSelectTab4
-nmap <leader>5 <Plug>AirlineSelectTab5
-nmap <leader>6 <Plug>AirlineSelectTab6
-nmap <leader>7 <Plug>AirlineSelectTab7
-nmap <leader>8 <Plug>AirlineSelectTab8
-nmap <leader>9 <Plug>AirlineSelectTab9
-nmap <leader>- <Plug>AirlineSelectPrevTab
-nmap <leader>+ <Plug>AirlineSelectNextTab
 
 """"""
 "Theme
