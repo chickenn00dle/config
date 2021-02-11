@@ -6,7 +6,6 @@
 	"diagnostic.errorSign": "✘",
 	"diagnostic.format": "%message [%source]",
 	"diagnostic.level": "warning",
-	"intelephense.environment.includePaths": [ "~/.composer/vendor/" ],
 	"intelephense.stubs": [
 		"apache",
 		"bcmath",
