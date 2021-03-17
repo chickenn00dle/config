@@ -13,12 +13,14 @@ setopt correct
 setopt correctall
 setopt vi
 
+
 #############
 #Key Bindings
 #############
 bindkey '^[[A' up-line-or-search
 bindkey '^[[B' down-line-or-search
 bindkey -M viins 'jj' vi-cmd-mode
+
 
 ########
 #History
@@ -27,6 +29,7 @@ HISTFILE=${ZDOTDIR:-$HOME}/.zsh_history
 HISTSIZE=5000
 SAVEHIST=2000
 HISTORY_IGNORE='(...|cd *|exit|h|history|ll|ls *|pwd)'
+
 
 ########
 #Aliases
@@ -44,6 +47,7 @@ alias mkdir='mkdir -p'
 alias -s log='tail -f -n 50'
 alias topp='top -o cpu -s 3'
 
+
 #######
 #Prompt
 #######
@@ -59,12 +63,14 @@ precmd() {
 	fi
 }
 
+
 ###########
 #Completion
 ###########
 zstyle ':completion:*' list-suffixes
 zstyle ':completion:*' expand prefix suffix
 autoload -Uz compinit && compinit
+
 
 ############
 #Load Config

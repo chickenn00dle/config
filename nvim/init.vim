@@ -12,6 +12,7 @@ let mapleader=','
 set backspace=indent,eol,start
 set clipboard=unnamed
 set completeopt=menu,menuone,noinsert,noselect
+set cursorline
 set encoding=utf8
 set foldmethod=indent
 set guifont=Menlo\ Regular:h18
@@ -31,10 +32,10 @@ set signcolumn=yes
 set shortmess+=c
 set showcmd
 set showmatch
-set termguicolors
 set title
 set updatetime=300
 set visualbell
+set wildignore=dist/*,vendor/*,node_modules/*,.git/*
 set wildmenu
 set wildmode=longest:full,full
 set wrap
@@ -115,7 +116,6 @@ if empty(glob("$XDG_CONFIG_HOME/nvim/autoload/plug.vim"))
 endif
 
 call plug#begin("$XDG_CONFIG_HOME/nvim/plugged")
-	Plug 'drewtempelmeyer/palenight.vim'
 	Plug 'neoclide/coc.nvim', {'branch': 'release'}
 	Plug 'preservim/nerdtree'
 	Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins'}
@@ -216,8 +216,28 @@ call denite#custom#option( '_', 'vertical_preview', 1 )
 call denite#custom#option( '_', 'winrow', 1 )
 call denite#custom#var( 'buffer', 'date_format', '' )
 call denite#custom#var( 'file/rec', 'command', [
-	\ 'scantree.py', '--path', ':directory',
-	\ "--ignore='.git,node_modules,vendor'" ] )
+	\	'scantree.py', '--path', ':directory',
+	\	"--ignore='.git,node_modules,vendor'" ] )
+call denite#custom#var( 'grep', {
+	\ 'command': [ 'grep' ],
+	\ 'default_opts': [ '-inH' ],
+	\ 'recursive_opts': [
+	\	'-r',
+	\	'--exclude-dir=dist',
+	\	'--exclude-dir=vendor',
+	\	'--exclude-dir=node_modules',
+	\	'--exclude-dir=\*git',
+	\	'--exclude-dir=docs',
+	\	'--exclude-dir=packages',
+	\	'--exclude=*.lock',
+	\	'--exclude=*.md',
+	\	'--exclude=*.txt',
+	\	'--exclude=*.pot',
+	\	'--exclude=*.zip',
+	\ ],
+	\ 'pattern_opt': [ '-e' ],
+	\ 'separator': [ '--' ],
+	\ 'final_opts': [] } )
 
 nmap <C-b> :Denite buffer<CR>
 nmap <C-p> :DeniteProjectDir file/rec<CR>
@@ -249,6 +269,7 @@ au VimEnter * NERDTree
 au StdinReadPre * let s:std_in=1
 au VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 au bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+au FileType nerdtree set norelativenumber
 
 let g:NERDTreeAutoDeleteBuffer=1
 let g:NERDTreeBookmarksFile=expand("$XDG_CONFIG_HOME/nvim/.NERDTreeBookmarks")
@@ -258,9 +279,15 @@ let g:NERDTreeMinimalUI=1
 let g:NERDTreeShowBookmarks=1
 let g:NERDTreeShowHidden=1
 let g:NERDTreeWinSize=50
+let &fcs='eob: '
 
-map <C-n> :NERDTreeToggle<CR>
-map <C-b> :Bookmark<Space>
+map <leader>n :NERDTreeToggle<CR>
+map <leader>b :Bookmark<Space>
+
+augroup nerdtreehidecwd
+	autocmd!
+	autocmd FileType nerdtree setlocal conceallevel=3 | syntax match NERDTreeDirSlash #/$# containedin=NERDTreeDir conceal contained
+augroup end
 
 
 """""""
@@ -285,14 +312,108 @@ let g:vdebug_keymap['detach']='<leader>d'
 let g:vdebug_keymap['set_breakpoint']='<leader>b'
 let g:vdebug_keymap['eval_visual']='<leader>e'
 
-highlight DbgBreakptLine ctermbg=none ctermfg=none
-highlight DbgBreakptSign ctermbg=none ctermfg=10
-highlight DbgCurrentLine ctermbg=none ctermfg=none
-highlight DbgCurrentSign ctermbg=none ctermfg=9
+hi! DbgBreakptLine ctermbg=none ctermfg=none
+hi! DbgBreakptSign ctermbg=none ctermfg=10
+hi! DbgCurrentLine ctermbg=none ctermfg=none
+hi! DbgCurrentSign ctermbg=none ctermfg=9
 
 
 """"""
 "Theme
 """"""
-colorscheme palenight
-set background=dark
+let WHITE=252
+let LIGHTGRAY=248
+let GRAY=238
+let DARKGRAY=234
+let BLACK=232
+let BLUE=81
+let DARKBLUE=32
+let GREEN=157
+let YELLOW=228
+let ORANGE= 215
+let RED=203
+let PURPLE=140
+
+exec 'hi! Normal ctermfg=' . WHITE . ' ctermbg=none'
+exec 'hi! Directory ctermfg=' . DARKBLUE
+exec 'hi! StatusLine cterm=none ctermfg=none ctermbg=235 guibg=black'
+exec 'hi! StatusLineNC cterm=none ctermfg=none ctermbg=235 guifg=white'
+exec 'hi! Cursor ctermbg=' . LIGHTGRAY
+exec 'hi! CursorLine cterm=none ctermfg=none ctermbg=none'
+exec 'hi! CursorLineNr ctermfg=' . LIGHTGRAY ' ctermbg=' . DARKGRAY
+exec 'hi! MatchParen ctermbg=' . GRAY
+exec 'hi! LineNr ctermfg=' . GRAY . ' ctermbg=' DARKGRAY
+exec 'hi! SignColumn ctermfg=' . GRAY . ' ctermbg=' . DARKGRAY
+exec 'hi! FoldColumn ctermbg=none ctermfg=' . DARKGRAY
+exec 'hi! Folded cterm=bold ctermbg=none ctermfg=' GRAY
+exec 'hi! Pmenu ctermfg=' . WHITE . ' ctermbg=' . GRAY
+exec 'hi! PmenuSel ctermfg=' . WHITE . ' ctermbg=' . DARKGRAY
+exec 'hi! DiffAdd ctermfg=' . GREEN
+exec 'hi! DiffDelete ctermfg=' . RED
+exec 'hi! DiffChange ctermfg=' . YELLOW
+exec 'hi! DiffText ctermfg=' . WHITE
+exec 'hi! IncSearch ctermbg=' . YELLOW
+exec 'hi! Search ctermbg=' . YELLOW
+exec 'hi! VertSplit cterm=none ctermfg=' . DARKGRAY . ' ctermbg=' . DARKGRAY
+exec 'hi! ErrorMsg ctermfg=' . WHITE . ' ctermbg=' . RED
+exec 'hi! WarningMsg ctermfg=' . WHITE . ' ctermbg=' . YELLOW
+exec 'hi! Question ctermfg=' . PURPLE
+
+exec 'hi! NonText ctermfg=' . GRAY
+exec 'hi! SpecialKey ctermfg=' . GRAY
+exec 'hi! Comment ctermfg=' . GRAY
+exec 'hi! Constant ctermfg=' . WHITE
+exec 'hi! String ctermfg=' . GREEN
+exec 'hi! Character ctermfg=' . GREEN
+exec 'hi! Number ctermfg=' . YELLOW
+exec 'hi! Float ctermfg=' . YELLOW
+exec 'hi! Boolean ctermfg=' . BLUE
+exec 'hi! Identifier ctermfg=' . RED
+exec 'hi! Function ctermfg=' . PURPLE
+exec 'hi! Statement ctermfg=' . PURPLE
+exec 'hi! Conditional ctermfg=' . PURPLE
+exec 'hi! PreCondit ctermfg=' . PURPLE
+exec 'hi! Repeat ctermfg=' . PURPLE
+exec 'hi! Label ctermfg=' . PURPLE
+exec 'hi! Operator ctermfg=' . WHITE
+exec 'hi! Keyword ctermfg=' . RED
+exec 'hi! Exception ctermfg=' . ORANGE
+exec 'hi! PreProc ctermfg=' . ORANGE
+exec 'hi! Include ctermfg=' . BLUE
+exec 'hi! Define ctermfg=' . BLUE
+exec 'hi! Macro ctermfg=' . BLUE
+exec 'hi! Type ctermfg=' . YELLOW
+exec 'hi! StorageClass ctermfg=' . YELLOW
+exec 'hi! Structure ctermfg=' . YELLOW
+exec 'hi! TypeDef ctermfg=' . YELLOW
+exec 'hi! Special ctermfg=' . ORANGE
+exec 'hi! SpecialChar ctermfg=' . WHITE
+exec 'hi! Tag ctermfg=' . WHITE
+exec 'hi! Delimiter ctermfg=' WHITE
+exec 'hi! SpecialComment ctermfg=' . WHITE
+exec 'hi! Underlined ctermfg=' . WHITE
+exec 'hi! Ignore ctermfg=' . LIGHTGRAY
+exec 'hi! Error ctermfg=' . WHITE . ' ctermbg=' . RED
+exec 'hi! Todo ctermfg=' . WHITE . ' ctermbg=' . YELLOW
+
+exec 'hi! NERDTreeCWD ctermfg=' . GRAY
+
+exec 'hi! gitcommitComment ctermfg=' . GRAY
+exec 'hi! gitcommitUnmerged ctermfg=' . RED
+exec 'hi! gitcommitOnBranch ctermfg=' . WHITE
+exec 'hi! gitcommitBranch ctermfg=' . PURPLE
+exec 'hi! gitcommitDiscardedType ctermfg=' . RED
+exec 'hi! gitcommitSelectedType ctermfg=' . GREEN
+exec 'hi! gitcommitHeader ctermfg=' . WHITE
+exec 'hi! gitcommitUntrackedFile ctermfg=' . GRAY
+exec 'hi! gitcommitDiscardedFile ctermfg=' . RED
+exec 'hi! gitcommitSelectedFile ctermfg=' . GREEN
+exec 'hi! gitcommitUnmergedFile ctermfg=' . YELLOW
+exec 'hi! gitcommitFile ctermfg=' . WHITE
+hi! link gitcommitNoBranch gitcommitBranch
+hi! link gitcommitUntracked gitcommitComment
+hi! link gitcommitDiscarded gitcommitComment
+hi! link gitcommitSelected gitcommitComment
+hi! link gitcommitDiscardedArrow gitcommitDiscardedFile
+hi! link gitcommitSelectedArrow gitcommitSelectedFile
+hi! link gitcommitUnmergedArrow gitcommitUnmergedFile
