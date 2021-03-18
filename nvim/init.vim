@@ -4,6 +4,7 @@
 syntax on
 filetype plugin indent on
 let mapleader=','
+colorscheme custom
 
 
 """"""""
@@ -311,109 +312,3 @@ let g:vdebug_keymap['close']='<leader>c'
 let g:vdebug_keymap['detach']='<leader>d'
 let g:vdebug_keymap['set_breakpoint']='<leader>b'
 let g:vdebug_keymap['eval_visual']='<leader>e'
-
-hi! DbgBreakptLine ctermbg=none ctermfg=none
-hi! DbgBreakptSign ctermbg=none ctermfg=10
-hi! DbgCurrentLine ctermbg=none ctermfg=none
-hi! DbgCurrentSign ctermbg=none ctermfg=9
-
-
-""""""
-"Theme
-""""""
-let WHITE=252
-let LIGHTGRAY=248
-let GRAY=238
-let DARKGRAY=234
-let BLACK=232
-let BLUE=81
-let DARKBLUE=32
-let GREEN=157
-let YELLOW=228
-let ORANGE= 215
-let RED=203
-let PURPLE=140
-
-exec 'hi! Normal ctermfg=' . WHITE . ' ctermbg=none'
-exec 'hi! Directory ctermfg=' . DARKBLUE
-exec 'hi! StatusLine cterm=none ctermfg=none ctermbg=235 guibg=black'
-exec 'hi! StatusLineNC cterm=none ctermfg=none ctermbg=235 guifg=white'
-exec 'hi! Cursor ctermbg=' . LIGHTGRAY
-exec 'hi! CursorLine cterm=none ctermfg=none ctermbg=none'
-exec 'hi! CursorLineNr ctermfg=' . LIGHTGRAY ' ctermbg=' . DARKGRAY
-exec 'hi! MatchParen ctermbg=' . GRAY
-exec 'hi! LineNr ctermfg=' . GRAY . ' ctermbg=' DARKGRAY
-exec 'hi! SignColumn ctermfg=' . GRAY . ' ctermbg=' . DARKGRAY
-exec 'hi! FoldColumn ctermbg=none ctermfg=' . DARKGRAY
-exec 'hi! Folded cterm=bold ctermbg=none ctermfg=' GRAY
-exec 'hi! Pmenu ctermfg=' . WHITE . ' ctermbg=' . GRAY
-exec 'hi! PmenuSel ctermfg=' . WHITE . ' ctermbg=' . DARKGRAY
-exec 'hi! DiffAdd ctermfg=' . GREEN
-exec 'hi! DiffDelete ctermfg=' . RED
-exec 'hi! DiffChange ctermfg=' . YELLOW
-exec 'hi! DiffText ctermfg=' . WHITE
-exec 'hi! IncSearch ctermbg=' . YELLOW
-exec 'hi! Search ctermbg=' . YELLOW
-exec 'hi! VertSplit cterm=none ctermfg=' . DARKGRAY . ' ctermbg=' . DARKGRAY
-exec 'hi! ErrorMsg ctermfg=' . WHITE . ' ctermbg=' . RED
-exec 'hi! WarningMsg ctermfg=' . WHITE . ' ctermbg=' . YELLOW
-exec 'hi! Question ctermfg=' . PURPLE
-
-exec 'hi! NonText ctermfg=' . GRAY
-exec 'hi! SpecialKey ctermfg=' . GRAY
-exec 'hi! Comment ctermfg=' . GRAY
-exec 'hi! Constant ctermfg=' . WHITE
-exec 'hi! String ctermfg=' . GREEN
-exec 'hi! Character ctermfg=' . GREEN
-exec 'hi! Number ctermfg=' . YELLOW
-exec 'hi! Float ctermfg=' . YELLOW
-exec 'hi! Boolean ctermfg=' . BLUE
-exec 'hi! Identifier ctermfg=' . RED
-exec 'hi! Function ctermfg=' . PURPLE
-exec 'hi! Statement ctermfg=' . PURPLE
-exec 'hi! Conditional ctermfg=' . PURPLE
-exec 'hi! PreCondit ctermfg=' . PURPLE
-exec 'hi! Repeat ctermfg=' . PURPLE
-exec 'hi! Label ctermfg=' . PURPLE
-exec 'hi! Operator ctermfg=' . WHITE
-exec 'hi! Keyword ctermfg=' . RED
-exec 'hi! Exception ctermfg=' . ORANGE
-exec 'hi! PreProc ctermfg=' . ORANGE
-exec 'hi! Include ctermfg=' . BLUE
-exec 'hi! Define ctermfg=' . BLUE
-exec 'hi! Macro ctermfg=' . BLUE
-exec 'hi! Type ctermfg=' . YELLOW
-exec 'hi! StorageClass ctermfg=' . YELLOW
-exec 'hi! Structure ctermfg=' . YELLOW
-exec 'hi! TypeDef ctermfg=' . YELLOW
-exec 'hi! Special ctermfg=' . ORANGE
-exec 'hi! SpecialChar ctermfg=' . WHITE
-exec 'hi! Tag ctermfg=' . WHITE
-exec 'hi! Delimiter ctermfg=' WHITE
-exec 'hi! SpecialComment ctermfg=' . WHITE
-exec 'hi! Underlined ctermfg=' . WHITE
-exec 'hi! Ignore ctermfg=' . LIGHTGRAY
-exec 'hi! Error ctermfg=' . WHITE . ' ctermbg=' . RED
-exec 'hi! Todo ctermfg=' . WHITE . ' ctermbg=' . YELLOW
-
-exec 'hi! NERDTreeCWD ctermfg=' . GRAY
-
-exec 'hi! gitcommitComment ctermfg=' . GRAY
-exec 'hi! gitcommitUnmerged ctermfg=' . RED
-exec 'hi! gitcommitOnBranch ctermfg=' . WHITE
-exec 'hi! gitcommitBranch ctermfg=' . PURPLE
-exec 'hi! gitcommitDiscardedType ctermfg=' . RED
-exec 'hi! gitcommitSelectedType ctermfg=' . GREEN
-exec 'hi! gitcommitHeader ctermfg=' . WHITE
-exec 'hi! gitcommitUntrackedFile ctermfg=' . GRAY
-exec 'hi! gitcommitDiscardedFile ctermfg=' . RED
-exec 'hi! gitcommitSelectedFile ctermfg=' . GREEN
-exec 'hi! gitcommitUnmergedFile ctermfg=' . YELLOW
-exec 'hi! gitcommitFile ctermfg=' . WHITE
-hi! link gitcommitNoBranch gitcommitBranch
-hi! link gitcommitUntracked gitcommitComment
-hi! link gitcommitDiscarded gitcommitComment
-hi! link gitcommitSelected gitcommitComment
-hi! link gitcommitDiscardedArrow gitcommitDiscardedFile
-hi! link gitcommitSelectedArrow gitcommitSelectedFile
-hi! link gitcommitUnmergedArrow gitcommitUnmergedFile
