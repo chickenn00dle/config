@@ -1,9 +1,9 @@
 """""""""""""""
 "Initialization
 """""""""""""""
+let mapleader=','
 syntax on
 filetype plugin indent on
-let mapleader=','
 colorscheme custom
 
 
@@ -77,26 +77,23 @@ set undolevels=9999
 """""""""
 "Key Maps
 """""""""
-nnoremap ; :
-inoremap jj <Esc>
-
+nn ; :
+ino jj <Esc>
 "Swap panes
 map <C-h> <C-w>h
 map <C-j> <C-w>j
 map <C-k> <C-w>k
 map <C-l> <C-w>l
-
 "Move code blocks
-nnoremap <S-A-j> :m+<CR>==
-nnoremap <S-A-k> :m-2<CR>==
-inoremap <S-A-j> <Esc>:m+<CR>==gi
-inoremap <S-A-k> <Esc>:m-2<CR>==gi
-vnoremap <S-A-j> :m'>+<CR>gv=gv
-vnoremap <S-A-k> :m-2<CR>gv=gv
-
+nn <S-A-j> :m+<CR>==
+nn <S-A-k> :m-2<CR>==
+ino <S-A-j> <Esc>:m+<CR>==gi
+ino <S-A-k> <Esc>:m-2<CR>==gi
+vn <S-A-j> :m'>+<CR>gv=gv
+vn <S-A-k> :m-2<CR>gv=gv
 "Space to fold/collapse code blocks
-nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
-vnoremap <Space> zf
+nn <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
+vn <Space> zf
 
 
 """"""""""""""""
@@ -129,7 +126,7 @@ call plug#begin("$XDG_CONFIG_HOME/nvim/plugged")
 	Plug 'vim-airline/vim-airline-themes'
 	Plug 'vim-scripts/matchit.zip'
 	Plug 'vim-vdebug/vdebug'
-	"Language Servers
+	"CoC Language Servers
 	Plug 'iamcco/diagnostic-languageserver', {'do': 'yarn install --frozen-lockfile && yarn build'}
 	Plug 'josa42/coc-sh', {'do': 'yarn install --frozen-lockfile'}
 	Plug 'marlonfan/coc-phpls', {'do': 'yarn install --frozen-lockfile'}
@@ -137,6 +134,7 @@ call plug#begin("$XDG_CONFIG_HOME/nvim/plugged")
 	Plug 'neoclide/coc-eslint', {'do': 'yarn install --frozen-lockfile'}
 	Plug 'neoclide/coc-html', {'do': 'yarn install --frozen-lockfile'}
 	Plug 'neoclide/coc-json', {'do': 'yarn install --frozen-lockfile'}
+	Plug 'neoclide/coc-rls', {'do': 'yarn install --frozen-lockfile'}
 	Plug 'neoclide/coc-tsserver', {'do': 'yarn install --frozen-lockfile'}
 call plug#end()
 
@@ -157,40 +155,39 @@ let g:airline#extensions#tabline#buffers_label=''
 let g:airline#extensions#tabline#tabs_label=''
 let g:airline#extensions#tabline#buffer_idx_mode=1
 
-nmap <leader>1 <Plug>AirlineSelectTab1
-nmap <leader>2 <Plug>AirlineSelectTab2
-nmap <leader>3 <Plug>AirlineSelectTab3
-nmap <leader>4 <Plug>AirlineSelectTab4
-nmap <leader>5 <Plug>AirlineSelectTab5
-nmap <leader>6 <Plug>AirlineSelectTab6
-nmap <leader>7 <Plug>AirlineSelectTab7
-nmap <leader>8 <Plug>AirlineSelectTab8
-nmap <leader>9 <Plug>AirlineSelectTab9
-nmap <leader>0 <Plug>AirlineSelectTab0
-nmap <leader>- <Plug>AirlineSelectPrevTab
-nmap <leader>+ <Plug>AirlineSelectNextTab
+nm <leader>1 <Plug>AirlineSelectTab1
+nm <leader>2 <Plug>AirlineSelectTab2
+nm <leader>3 <Plug>AirlineSelectTab3
+nm <leader>4 <Plug>AirlineSelectTab4
+nm <leader>5 <Plug>AirlineSelectTab5
+nm <leader>6 <Plug>AirlineSelectTab6
+nm <leader>7 <Plug>AirlineSelectTab7
+nm <leader>8 <Plug>AirlineSelectTab8
+nm <leader>9 <Plug>AirlineSelectTab9
+nm <leader>0 <Plug>AirlineSelectTab0
+nm <leader>- <Plug>AirlineSelectPrevTab
+nm <leader>+ <Plug>AirlineSelectNextTab
 
 
 """"
 "CoC
 """"
-inoremap <silent><expr> <Tab>
+ino <silent><expr> <Tab>
 	\ pumvisible() ? "\<C-n>" :
 	\ CheckBackSpace() ? "\<TAB>" :
 	\ coc#refresh()
-inoremap <expr><S-Tab> pumvisible() ? "\<C-p>" : "\<C-h>"
-inoremap <silent><expr> <C-Space> coc#refresh()
-inoremap <silent><expr> <CR> pumvisible() ? coc#_select_confirm() :
+ino <expr><S-Tab> pumvisible() ? "\<C-p>" : "\<C-h>"
+ino <silent><expr> <C-Space> coc#refresh()
+ino <silent><expr> <CR> pumvisible() ? coc#_select_confirm() :
 	\ "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-
-nmap <silent> gh :call ShowDocumentation()<CR>
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-nmap <silent> gr <Plug>(coc-references)
-nmap <silent> gn :call CocAction('diagnosticNext')<CR>
-nmap <silent> gp :call CocAction('diagnosticPrevious')<CR>
+nm <silent> gh :call ShowDocumentation()<CR>
+nm <silent> gd <Plug>(coc-definition)
+nm <silent> gy <Plug>(coc-type-definition)
+nm <silent> gi <Plug>(coc-implementation)
+nm <silent> gr <Plug>(coc-references)
+nm <silent> gr <Plug>(coc-references)
+nm <silent> gn :call CocAction('diagnosticNext')<CR>
+nm <silent> gp :call CocAction('diagnosticPrevious')<CR>
 
 
 """""""
@@ -228,12 +225,10 @@ call denite#custom#var( 'grep', {
 	\ 'separator': [ '--' ],
 	\ 'final_opts': [] } )
 
-nmap <C-b> :Denite buffer<CR>
-nmap <C-p> :DeniteProjectDir file/rec<CR>
-nnoremap <C-g> :<C-u>Denite grep:. -no-empty<CR>
-nnoremap <C-f> :<C-u>DeniteCursorWord grep:.<CR>
-
-autocmd FileType denite call DeniteMapSettings()
+nm <C-b> :Denite buffer<CR>
+nm <C-p> :DeniteProjectDir file/rec<CR>
+nn <C-g> :<C-u>Denite grep:. -no-empty<CR>
+nn <C-f> :<C-u>DeniteCursorWord grep:.<CR>
 
 
 """""""""
@@ -253,14 +248,9 @@ map <leader>n :NERDTreeToggle<CR>
 map <leader>b :Bookmark<Space>
 
 au VimEnter * NERDTree
-au StdinReadPre * let s:std_in=1
 au VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+au StdinReadPre * let s:std_in=1
 au bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-au FileType nerdtree set norelativenumber
-augroup nerdtreehidecwd
-	autocmd!
-	autocmd FileType nerdtree setlocal conceallevel=3 | syntax match NERDTreeDirSlash #/$# containedin=NERDTreeDir conceal contained
-augroup end
 
 
 """""""
@@ -273,7 +263,6 @@ let g:vdebug_options['port']=9001
 let g:vdebug_options['timeout']=30
 let g:vdebug_options['simplified_status']=0
 let g:vdebug_options['watch_window_style']='expanded' "Set to compact when not dual monitoring
-
 let g:vdebug_keymap={}
 let g:vdebug_keymap['run']='<leader>,'
 let g:vdebug_keymap['run_to_cursor']='<Down>'
