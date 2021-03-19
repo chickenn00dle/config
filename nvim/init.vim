@@ -176,14 +176,14 @@ nmap <leader>+ <Plug>AirlineSelectNextTab
 """"
 inoremap <silent><expr> <Tab>
 	\ pumvisible() ? "\<C-n>" :
-	\ <SID>check_back_space() ? "\<TAB>" :
+	\ CheckBackSpace() ? "\<TAB>" :
 	\ coc#refresh()
 inoremap <expr><S-Tab> pumvisible() ? "\<C-p>" : "\<C-h>"
 inoremap <silent><expr> <C-Space> coc#refresh()
 inoremap <silent><expr> <CR> pumvisible() ? coc#_select_confirm() :
 	\ "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
-nnoremap <silent> gh :call <SID>show_documentation()<CR>
+nmap <silent> gh :call ShowDocumentation()<CR>
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
@@ -191,18 +191,6 @@ nmap <silent> gr <Plug>(coc-references)
 nmap <silent> gr <Plug>(coc-references)
 nmap <silent> gn :call CocAction('diagnosticNext')<CR>
 nmap <silent> gp :call CocAction('diagnosticPrevious')<CR>
-
-function! s:check_back_space() abort
-	let col = col('.') - 1
-	return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-function! s:show_documentation()
-	if &filetype == 'vim'
-		execute 'h '.expand('<cword>')
-	else
-		call CocAction('doHover')
-	endif
-endfunction
 
 
 """""""
@@ -245,33 +233,12 @@ nmap <C-p> :DeniteProjectDir file/rec<CR>
 nnoremap <C-g> :<C-u>Denite grep:. -no-empty<CR>
 nnoremap <C-f> :<C-u>DeniteCursorWord grep:.<CR>
 
-autocmd FileType denite call s:denite_my_settings()
-
-function! s:denite_my_settings() abort
-	nnoremap <silent><buffer><expr> <CR>
-		\ denite#do_map('do_action')
-	nnoremap <silent><buffer><expr> d
-		\ denite#do_map('do_action', 'delete')
-	nnoremap <silent><buffer><expr> p
-		\ denite#do_map('do_action', 'preview')
-	nnoremap <silent><buffer><expr> q
-		\ denite#do_map('quit')
-	nnoremap <silent><buffer><expr> i
-		\ denite#do_map('open_filter_buffer')
-	nnoremap <silent><buffer><expr> <Space>
-		\ denite#do_map('toggle_select').'j'
-endfunction
+autocmd FileType denite call DeniteMapSettings()
 
 
 """""""""
 "NerdTree
 """""""""
-au VimEnter * NERDTree
-au StdinReadPre * let s:std_in=1
-au VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
-au bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-au FileType nerdtree set norelativenumber
-
 let g:NERDTreeAutoDeleteBuffer=1
 let g:NERDTreeBookmarksFile=expand("$XDG_CONFIG_HOME/nvim/.NERDTreeBookmarks")
 let g:NERDTreeDirArrowExpandable='▸'
@@ -285,6 +252,11 @@ let &fcs='eob: '
 map <leader>n :NERDTreeToggle<CR>
 map <leader>b :Bookmark<Space>
 
+au VimEnter * NERDTree
+au StdinReadPre * let s:std_in=1
+au VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+au bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+au FileType nerdtree set norelativenumber
 augroup nerdtreehidecwd
 	autocmd!
 	autocmd FileType nerdtree setlocal conceallevel=3 | syntax match NERDTreeDirSlash #/$# containedin=NERDTreeDir conceal contained

@@ -1,7 +1,7 @@
 """"""""
 "Palette
 """"""""
-let s:white=252
+let s:white=255
 let s:lgray=248
 let s:gray=238
 let s:dgray=234
@@ -23,27 +23,27 @@ endfunction
 
 call s:h( 'Normal', s:white, '', '' )
 call s:h( 'Directory', s:dblue, '', '' )
-call s:h( 'StatusLine', 238, 235, '' )
+call s:h( 'StatusLine', '', 235, '' )
 call s:h( 'StatusLineNC', '', 235, '' )
 call s:h( 'Cursor', '', s:lgray, '' )
 call s:h( 'CursorLine', '', '', '' )
 call s:h( 'CursorLineNr', s:lgray, s:dgray, '' )
 call s:h( 'MatchParen', '', s:gray, '' )
-call s:h( 'LineNr', s:gray, s:dgray, '' )
-call s:h( 'SignColumn', s:gray, s:dgray, '' )
+call s:h( 'LineNr', s:gray, '', '' )
+call s:h( 'SignColumn', s:gray, '', '' )
 call s:h( 'FoldColumn', s:dgray, '', '' )
 call s:h( 'Folded', s:gray, '', 'bold' )
-call s:h( 'Pmenu', s:white, s:dgray, '' )
-call s:h( 'PmenuSel', s:white, s:dgray, '' )
+call s:h( 'Pmenu', s:white, s:black, '' )
+call s:h( 'PmenuSel', s:white, s:gray, '' )
 call s:h( 'DiffAdd', s:green, '', '' )
 call s:h( 'DiffDelete', s:red, '', '' )
 call s:h( 'DiffChange', s:yellow, '', '' )
 call s:h( 'DiffText', s:white, '', '' )
-call s:h( 'Search', s:yellow, '', '' )
-call s:h( 'IncSearch', s:yellow, '', '' )
-call s:h( 'VertSplit', s:dgray, s:dgray, '' )
+call s:h( 'Search', s:dgray, s:yellow, '' )
+call s:h( 'IncSearch', s:dgray, s:yellow, '' )
+call s:h( 'VertSplit', s:black, '', '' )
 call s:h( 'ErrorMsg', s:white, s:red, '' )
-call s:h( 'WarningMsg', s:white, s:yellow, '' )
+call s:h( 'WarningMsg', s:dgray, s:yellow, '' )
 call s:h( 'Question', s:blue, '', '' )
 
 call s:h( 'NonText', s:gray, '', '' )
@@ -81,7 +81,7 @@ call s:h( 'SpecialComment', s:white, '', '' )
 call s:h( 'Underlined', s:white, '', '' )
 call s:h( 'Ignore', s:lgray, '', '' )
 call s:h( 'Error', s:white, s:red, '' )
-call s:h( 'Todo', s:white, s:yellow, '' )
+call s:h( 'Todo', s:dgray, s:yellow, '' )
 
 call s:h( 'gitcommitComment', s:gray, '', '' )
 call s:h( 'gitcommitUnmerged', s:red, '', '' )
