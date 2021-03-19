@@ -1,31 +1,35 @@
 """"""""
 "Palette
 """"""""
-let s:white=255
-let s:lgray=248
-let s:gray=238
-let s:dgray=234
-let s:black=232
-let s:blue=81
-let s:dblue=32
-let s:green=157
-let s:yellow=228
-let s:orange=215
-let s:red=203
-let s:purple=140
+let s:white={ "xterm": 255, "hex": "#eeeeee" }
+let s:lgray={ "xterm": 248, "hex": "#a8a8a8" }
+let s:gray={ "xterm": 238, "hex": "#444444" }
+let s:dgray={ "xterm": 234, "hex": "#1c1c1c" }
+let s:black={ "xterm": 232, "hex": "#080808" }
+let s:blue={ "xterm": 81, "hex": "#5fd7ff" }
+let s:dblue={ "xterm": 32, "hex": "#0087d7" }
+let s:green={ "xterm": 157, "hex": "#afffaf" }
+let s:yellow={ "xterm": 228, "hex": "#ffff87" }
+let s:orange={ "xterm": 215, "hex": "ffaf5f" }
+let s:red={ "xterm": 203, "hex": "#ff5f5f" }
+let s:purple={ "xterm": 140, "hex": "#af87d7" }
 
 function! s:hl( group, fg, bg, attr )
-	let l:fg = a:fg ? a:fg : 'none'
-	let l:bg = a:bg ? a:bg : 'none'
+	let l:ctermfg = type( a:fg ) == type({}) ? get( a:fg, "xterm" ) : 'none'
+	let l:ctermbg = type( a:bg ) == type({}) ? get( a:bg, "xterm" ) : 'none'
+	let l:guifg = type( a:fg ) == type({}) ? get( a:fg, "hex" ) : 'none'
+	let l:guibg = type( a:bg ) == type({}) ? get( a:bg, "hex" ) : 'none'
 	let l:attr = exists( a:attr ) ? a:attr : 'none'
-	exec 'hi! ' . a:group . ' cterm=' . l:attr . ' ctermfg=' . l:fg . ' ctermbg=' . l:bg
+	exec 'hi! ' . a:group . ' cterm=' . l:attr . ' gui=' . l:attr .
+		\ ' ctermfg=' . l:ctermfg . ' ctermbg=' . l:ctermbg .
+		\ ' guifg=' . l:guifg . ' guibg=' . l:guibg
 endfunction
 
 call s:hl( 'Cursor', '', s:lgray, '' )
 call s:hl( 'CursorLine', '', '', '' )
 call s:hl( 'CursorLineNr', s:lgray, s:dgray, '' )
-call s:hl( 'StatusLine', '', 235, '' )
-call s:hl( 'StatusLineNC', '', 235, '' )
+call s:hl( 'StatusLine', s:black, s:dgray, '' )
+call s:hl( 'StatusLineNC', '', s:dgray, '' )
 call s:hl( 'VertSplit', s:black, '', '' )
 call s:hl( 'LineNr', s:gray, '', '' )
 call s:hl( 'SignColumn', s:gray, '', '' )
