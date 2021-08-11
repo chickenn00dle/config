@@ -10,10 +10,11 @@ The following assumes you are running `zsh` on MacOS.
 cd ~
 git clone https://github.com/chickenn00dle/config.git .config
 ln -s ~/.config/zsh/.zshenv ~/.zshenv
+ln -s ~/.config/zsh/.zshrc ~/.zshrc
 ln -s ~/.config/tmux/.tmux.conf ~/.tmux.conf
 ln -s ~/.config/git/.gitconfig ~/.gitconfig
-source ~/.config/zsh/.zshenv
-source ~/.config/zsh/.zshrc
+source ~/.zshenv
+source ~/.zshrc
 ```
 
 ## Getting Started

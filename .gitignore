@@ -1,5 +1,8 @@
 valet
 configstore
+gatsby
+stripe
+profanity
 
 # nvim
 autoload

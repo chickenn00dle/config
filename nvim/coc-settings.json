@@ -85,7 +85,7 @@
 			"command": "~/.config/nvim/plugged/diagnostic-languageserver/bin/index.js",
 			"args": [ "--stdio" ],
 			"filetypes": [ "php" ],
-			"rootPatterns": [ "phpcs.xml" ],
+			"rootPatterns": [ "phpcs.xml", "phpcs.xml.dist" ],
 			"initializationOptions": {
 				"linters": {
 					"phpcs": {
