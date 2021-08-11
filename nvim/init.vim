@@ -126,16 +126,6 @@ call plug#begin("$XDG_CONFIG_HOME/nvim/plugged")
 	Plug 'vim-airline/vim-airline-themes'
 	Plug 'vim-scripts/matchit.zip'
 	Plug 'vim-vdebug/vdebug'
-	"CoC Language Servers
-	Plug 'iamcco/diagnostic-languageserver', {'do': 'yarn install --frozen-lockfile && yarn build'}
-	Plug 'josa42/coc-sh', {'do': 'yarn install --frozen-lockfile'}
-	Plug 'marlonfan/coc-phpls', {'do': 'yarn install --frozen-lockfile'}
-	Plug 'neoclide/coc-css', {'do': 'yarn install --frozen-lockfile'}
-	Plug 'neoclide/coc-eslint', {'do': 'yarn install --frozen-lockfile'}
-	Plug 'neoclide/coc-html', {'do': 'yarn install --frozen-lockfile'}
-	Plug 'neoclide/coc-json', {'do': 'yarn install --frozen-lockfile'}
-	Plug 'neoclide/coc-rls', {'do': 'yarn install --frozen-lockfile'}
-	Plug 'neoclide/coc-tsserver', {'do': 'yarn install --frozen-lockfile'}
 call plug#end()
 
 "Install any uninstalled plugins
@@ -172,6 +162,20 @@ nm <leader>+ <Plug>AirlineSelectNextTab
 """"
 "CoC
 """"
+" CoC Language Servers
+let g:coc_global_extensions = [
+	\ 'coc-css',
+	\ 'coc-diagnostic',
+	\ 'coc-eslint',
+	\ 'coc-html',
+	\ 'coc-json',
+	\ 'coc-phpls',
+	\ 'coc-python',
+	\ 'coc-sh',
+	\ 'coc-rls',
+	\ 'coc-tsserver',
+	\]
+
 ino <silent><expr> <Tab>
 	\ pumvisible() ? "\<C-n>" :
 	\ CheckBackSpace() ? "\<TAB>" :
