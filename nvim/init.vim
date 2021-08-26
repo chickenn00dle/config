@@ -262,11 +262,11 @@ au bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTre
 """""""
 let g:vdebug_options={}
 let g:vdebug_options['break_on_open']=0
-let g:vdebug_options['ide_key']='raz_xdebug'
-let g:vdebug_options['port']=9001
+let g:vdebug_options['ide_key']='VDEBUG'
+let g:vdebug_options['port']=9000
 let g:vdebug_options['timeout']=30
 let g:vdebug_options['simplified_status']=0
-let g:vdebug_options['watch_window_style']='expanded' "Set to compact when not dual monitoring
+let g:vdebug_options['watch_window_style']='compact' "compact/expanded
 let g:vdebug_keymap={}
 let g:vdebug_keymap['run']='<leader>,'
 let g:vdebug_keymap['run_to_cursor']='<Down>'
