@@ -176,6 +176,16 @@ let g:coc_global_extensions = [
 	\ 'coc-tsserver',
 	\]
 
+" PHP stubs ($HOME/Stubs).
+call coc#config(
+	\ 'intelephense',
+	\ {
+	\	'environment': {
+	\		"includePaths": ["$HOME/Stubs"]
+	\	}
+	\ }
+	\)
+
 ino <silent><expr> <Tab>
 	\ pumvisible() ? "\<C-n>" :
 	\ CheckBackSpace() ? "\<TAB>" :
@@ -263,7 +273,7 @@ au bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTre
 let g:vdebug_options={}
 let g:vdebug_options['break_on_open']=0
 let g:vdebug_options['ide_key']='VDEBUG'
-let g:vdebug_options['port']=9000
+let g:vdebug_options['port']=9001
 let g:vdebug_options['timeout']=30
 let g:vdebug_options['simplified_status']=0
 let g:vdebug_options['watch_window_style']='compact' "compact/expanded
