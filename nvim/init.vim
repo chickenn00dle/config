@@ -114,6 +114,7 @@ if empty(glob("$XDG_CONFIG_HOME/nvim/autoload/plug.vim"))
 endif
 
 call plug#begin("$XDG_CONFIG_HOME/nvim/plugged")
+	Plug 'editorconfig/editorconfig-vim'
 	Plug 'neoclide/coc.nvim', {'branch': 'release'}
 	Plug 'preservim/nerdtree'
 	Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins'}
@@ -176,16 +177,6 @@ let g:coc_global_extensions = [
 	\ 'coc-tsserver',
 	\]
 
-" PHP stubs ($HOME/Stubs).
-call coc#config(
-	\ 'intelephense',
-	\ {
-	\	'environment': {
-	\		"includePaths": ["$HOME/Stubs"]
-	\	}
-	\ }
-	\)
-
 ino <silent><expr> <Tab>
 	\ pumvisible() ? "\<C-n>" :
 	\ CheckBackSpace() ? "\<TAB>" :
@@ -217,18 +208,24 @@ call denite#custom#option( '_', 'winrow', 1 )
 call denite#custom#var( 'buffer', 'date_format', '' )
 call denite#custom#var( 'file/rec', 'command', [
 	\	'scantree.py', '--path', ':directory',
-	\	"--ignore='.git,node_modules,vendor'" ] )
+	\	"--ignore='.git,node_modules,vendor,docker,dist,build,languages'" ] )
 call denite#custom#var( 'grep', {
 	\ 'command': [ 'grep' ],
 	\ 'default_opts': [ '-inH' ],
 	\ 'recursive_opts': [
 	\	'-r',
+	\	'--exclude-dir=build',
 	\	'--exclude-dir=dist',
 	\	'--exclude-dir=vendor',
 	\	'--exclude-dir=node_modules',
+	\	'--exclude-dir=docker',
+	\	'--exclude-dir=docs',
 	\	'--exclude-dir=\*git',
 	\	'--exclude-dir=docs',
 	\	'--exclude-dir=packages',
+	\	'--exclude-dir=languages',
+	\	'--exclude-dir=.cache',
+	\	'--exclude-dir=.yarn',
 	\	'--exclude=*.lock',
 	\	'--exclude=*.md',
 	\	'--exclude=*.txt',
@@ -246,6 +243,14 @@ nn <C-f> :<C-u>DeniteCursorWord grep:.<CR>
 
 
 """""""""
+"Fugitive
+"""""""""
+let g:github_enterprise_urls = ['https://github.tumblr.net']
+
+map <leader>gb :GBrowse<CR>
+
+
+"""""""""
 "NerdTree
 """""""""
 let g:NERDTreeAutoDeleteBuffer=1
@@ -259,7 +264,7 @@ let g:NERDTreeWinSize=50
 let &fcs='eob: '
 
 map <leader>n :NERDTreeToggle<CR>
-map <leader>b :Bookmark<Space>
+map <leader>f :NERDTreeFind<Space>
 
 au VimEnter * NERDTree
 au VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
