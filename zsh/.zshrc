@@ -1,5 +1,10 @@
-# Fig pre block. Keep at the top of this file.
-. "$HOME/.fig/shell/zshrc.pre.zsh"
+################
+#Load Pre Config
+################
+PRECONFIG=${ZDOTDIR:-$HOME}/preconfig.zsh
+if [ -f "$PRECONFIG" ]; then
+	. $PRECONFIG
+fi
 
 ########
 #Options
