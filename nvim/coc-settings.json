@@ -1,4 +1,9 @@
 {
+	"coc": {
+		"preferences": {
+			"formatOnSaveFiletypes": ["css", "scss", "javascript", "javascriptreact", "typescript", "typescriptreact"]
+		}
+	},
 	"codeLens": {
 		"enable": false
 	},

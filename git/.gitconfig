@@ -1,11 +1,3 @@
-[user]
-	name = Rasmy Nguyen
-	email = rtnguyen87@gmail.com
-[core]
-	editor = nvim
-	excludesFile = ~/.config/git/.gitignore
-[color]
-	ui = true
 [alias]
 	logg = log --oneline --graph --decorate --all --abbrev-commit
 	co = checkout
@@ -16,11 +8,24 @@
 	st = status
 	sw = switch
 	re = restore
+[color]
+	ui = true
+[core]
+	editor = nvim
+	excludesFile = ~/.config/git/.gitignore
 [credential]
 	helper = osxkeychain
+[filter "gitignore"]
+	clean = "sed '/\"gitignore$/d'"
+	smudge = cat
+[include]
+	path = ~/.config/git/.privateconfig
 [init]
 	defaultBranch = main
 [pull]
 	rebase = false
-[include]
-	path = ~/.config/git/.privateconfig
+[submodule]
+	recurse = true
+[user]
+	name = Rasmy Nguyen
+	email = rtnguyen87@gmail.com

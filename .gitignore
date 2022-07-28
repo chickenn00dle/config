@@ -6,6 +6,7 @@ undo
 undo/*
 .NERDTreeBookmarks
 .netrwhist
+nvim/coc-settings.json
 
 # tmux
 resurrect
@@ -24,8 +25,6 @@ preconfig.zsh
 .mono
 valet
 configstore
-gatsby
-stripe
 profanity
 fish
 git/.privateconfig
