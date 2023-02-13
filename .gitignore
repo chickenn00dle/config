@@ -25,6 +25,8 @@ preconfig.zsh
 .mono
 valet
 configstore
+finicky
 profanity
 fish
 git/.privateconfig
+github-copilot
