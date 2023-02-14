@@ -109,18 +109,3 @@ hi! link gitcommitSelected gitcommitComment
 hi! link gitcommitDiscardedArrow gitcommitDiscardedFile
 hi! link gitcommitSelectedArrow gitcommitSelectedFile
 hi! link gitcommitUnmergedArrow gitcommitUnmergedFile
-
-"""""""""
-"NERDTree
-"""""""""
-call s:hl( 'NERDTreeCWD', s:lgray, '', '' )
-call s:hl( 'NERDTreeBookmark', s:purple, '', '' )
-call s:hl( 'NERDTreeExecFile', s:red, '', '' )
-
-"""""""
-"Vdebug
-"""""""
-call s:hl( 'DbgBreakptLine', '', '', '' )
-call s:hl( 'DbgCurrentLine', '', '', '' )
-call s:hl( 'DbgBreakptSign', s:green, '', '' )
-call s:hl( 'DbgCurrentSign', s:red, '', '' )

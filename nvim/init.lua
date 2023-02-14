@@ -1,70 +1,95 @@
+----------
+-- Globals
+----------
+local api = vim.api
+local call = vim.call
+local cmd = vim.cmd
+local fn = vim.fn
+local g = vim.g
+local keymap = vim.keymap
+local opt = vim.opt
+
+
 -----------------
 -- Initialization
 -----------------
-vim.g.mapleader = ','
-vim.cmd([[
-	syntax on
-	filetype plugin indent on
-	colorscheme custom
+g.loaded_netrw = 1
+g.loaded_netrwPlugin = 1
+g.mapleader = ','
+
+opt.termguicolors = true
+opt.syntax='on'
+
+cmd([[
+filetype plugin indent on
+colorscheme custom
 ]])
 
 ----------
 -- General
 ----------
 
-vim.opt.backspace=indent,eol,start
-vim.opt.clipboard=unnamed
-vim.opt.completeopt=menu,menuone,noinsert,noselect
-vim.opt.cursorline=true
-vim.opt.encoding=utf8
-vim.opt.foldmethod=indent
-vim.opt.guifont=Menlo\ Regular:h18
-vim.opt.hidden=true
-vim.opt.list=true
-vim.opt.listchars=tab:→\ ,trail:•
-vim.opt.matchpairs+=<:>
-vim.opt.modelines=0
-vim.opt.mouse=a
-vim.opt.noerrorbells=true
-vim.opt.noshowmode=true
-vim.opt.nowritebackup=true
-vim.opt.number=true
-vim.opt.scrolloff=999
-vim.opt.shellcmdflag=-ic
-vim.opt.signcolumn=yes
-vim.opt.shortmess+=c
-vim.opt.showcmd=true
-vim.opt.showmatch=true
-vim.opt.title=true
-vim.opt.updatetime=300
-vim.opt.visualbell=true
-vim.opt.wildignore=dist/*,vendor/*,node_modules/*,.git/*
-vim.opt.wildmenu=true
-vim.opt.wildmode=longest:full,full
-vim.opt.wrap=true
+cmd([[
+set backspace=indent,eol,start
+set clipboard=unnamed
+set completeopt=menu,menuone,noinsert,noselect
+set cursorline
+set encoding=utf8
+set foldmethod=indent
+set guifont=Menlo\ Regular:h18
+set hidden
+set list
+set listchars=tab:→\ ,trail:•
+set matchpairs+=<:>
+set modelines=0
+set mouse=a
+set noerrorbells
+set noshowmode
+set nowritebackup
+set number
+set scrolloff=999
+set shellcmdflag=-ic
+set signcolumn=yes
+set shortmess+=c
+set showcmd
+set showmatch
+set title
+set updatetime=300
+set visualbell
+set wildignore=dist/*,vendor/*,node_modules/*,.git/*
+set wildmenu
+set wildmode=longest:full,full
+set wrap
+]])
 
 -- Tabs/Indentation
-vim.opt.autoindent=true
-vim.opt.copyindent=true
-vim.opt.noexpandtab=true
-vim.opt.shiftround=true
-vim.opt.shiftwidth=4
-vim.opt.softtabstop=4
-vim.opt.tabstop=4
+cmd([[
+set autoindent
+set copyindent
+set noexpandtab
+set shiftround
+set shiftwidth=4
+set softtabstop=4
+set tabstop=4
+]])
 
 -- Search
-vim.opt.hlsearch=true
-vim.opt.ignorecase=true
-vim.opt.incsearch=true
-vim.opt.path=$PWD/**
-vim.opt.smartcase=true
+cmd([[
+set hlsearch
+set ignorecase
+set incsearch
+set path=$PWD/**
+set smartcase
+]])
 
 -- Undo
-vim.opt.nobackup=true
-vim.opt.noswapfile=true
-vim.opt.undofile=true
-vim.opt.undodir="$XDG_CONFIG_HOME/nvim/undo"
-vim.opt.undolevels=9999
+cmd([[
+set nobackup
+set noswapfile
+set undofile
+set undodir="$XDG_CONFIG_HOME/nvim/undo"
+set undolevels=9999
+]])
 
 
 -----------
@@ -72,8 +97,7 @@ vim.opt.undolevels=9999
 -----------
 
 function map(mode, shortcut, command)
-	local map = vim.api.nvim_set_keymap
-	map(mode, shortcut, command, { noremap = true, silent = true })
+	api.nvim_set_keymap(mode, shortcut, command, { noremap = true, silent = true })
 end
 
 map('n', ';', ':')
@@ -94,53 +118,41 @@ map('v', '<S-A-j>', ":m'>+<CR>gv=gv")
 map('n', '<S-A-k>', ':m-2<CR>gv=gv')
 
 -- Space to fold/collapse code blocks
-map('n', '<silent> <Space>', '@=(foldlevel('.')?'za':'\<Space>')<CR>')
-map('v', '<Space>', 'zf')
+map('n', '<Space>', 'za')
+map('v', '<Space>', 'za')
 
 
 ----------
 -- Plugins
 ----------
 
--- Install Plugged if not already installed
-if empty(glob("$XDG_CONFIG_HOME/nvim/autoload/plug.vim"))
-	silent !curl -fLo $XDG_CONFIG_HOME/nvim/autoload/plug.vim --create-dirs
-				\ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-	au VimEnter * PlugInstall --sync | source $MYVIMRC
-endif
-
-local Plug = vim.fn['plug#']
-vim.call('plug#begin', '~/.config/nvim/plugged')
-	Plug 'editorconfig/editorconfig-vim'
-	Plug 'github/copilot.vim'
-	Plug 'neovim/nvim-lspconfig'
-	Plug 'preservim/nerdtree'
-	Plug 'tomtom/tcomment_vim'
-	Plug 'tpope/vim-fugitive'
-	Plug 'tpope/vim-rhubarb'
-	Plug 'tpope/vim-surround'
-	Plug 'tpope/vim-vinegar'
-	Plug 'vim-airline/vim-airline'
-	Plug 'vim-airline/vim-airline-themes'
-	Plug 'vim-scripts/matchit.zip'
-vim.call('plug#end')
-
-local augroup = vim.api.nvim_create_augroup
-local autocmd = vim.api.nvim_create_autocmd
--- Install any uninstalled plugins
-if len(filter(values(vim.g.plugs), '!isdirectory(v:val.dir)'))
-	au VimEnter * PlugInstall --sync | source $MYVIMRC
-endif
-
+local Plug = fn['plug#']
+call('plug#begin', '~/.config/nvim/plugged')
+Plug 'editorconfig/editorconfig-vim'
+Plug 'github/copilot.vim'
+Plug 'neovim/nvim-lspconfig'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-tree/nvim-tree.lua'
+Plug 'nvim-tree/nvim-web-devicons'
+Plug 'tomtom/tcomment_vim'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-rhubarb'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-vinegar'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'vim-scripts/matchit.zip'
+call('plug#end')
 
 -- Airline
-vim.g.airline_theme='minimalist'
-vim.g.airline#extensions#ale#enabled=1
-vim.g.airline#extensions#tabline#enabled=1
-vim.g.airline#extensions#tabline#formatter='unique_tail'
-vim.g.airline#extensions#tabline#buffers_label=''
-vim.g.airline#extensions#tabline#tabs_label=''
-vim.g.airline#extensions#tabline#buffer_idx_mode=1
+g.airline_theme='minimalist'
+g['airline#extensions#ale#enabled']=1
+g['airline#extensions#tabline#enabled']=1
+g['airline#extensions#tabline#formatter']='unique_tail'
+g['airline#extensions#tabline#buffers_label']=''
+g['airline#extensions#tabline#tabs_label']=''
+g['airline#extensions#tabline#buffer_idx_mode']=1
 
 map('n', '<leader>1', '<Plug>AirlineSelectTab1')
 map('n', '<leader>2', '<Plug>AirlineSelectTab2')
@@ -156,23 +168,87 @@ map('n', '<leader>-', '<Plug>AirlineSelectPrevTab')
 map('n', '<leader>+', '<Plug>AirlineSelectNextTab')
 
 -- Fugitive
-vim.g.github_enterprise_urls = ['https://github.tumblr.net']
+g.github_enterprise_urls={'https://github.tumblr.net'}
 
 -- LSP
-require'lspconfig'.tsserver.setup{}
+keymap.set('n', 'gp', vim.diagnostic.goto_prev, { noremap=true, silent=true })
+keymap.set('n', 'gn', vim.diagnostic.goto_next, { noremap=true, silent=true })
 
--- NerdTree
-vim.g.NERDTreeAutoDeleteBuffer=1
-vim.g.NERDTreeBookmarksFile=expand("$XDG_CONFIG_HOME/nvim/.NERDTreeBookmarks")
-vim.g.NERDTreeDirArrowExpandable='▸'
-vim.g.NERDTreeDirArrowCollapsible='▾'
-vim.g.NERDTreeMinimalUI=1
-vim.g.NERDTreeShowBookmarks=1
-vim.g.NERDTreeShowHidden=1
-vim.g.NERDTreeWinSize=50
+local on_attach = function(client, bufnr)
+	vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
-vim.opt.norelativenumber
-vim.opt.conceallevel=3 | syntax match NERDTreeDirSlash #/$# containedin=NERDTreeDir conceal contained
+	local bufopts = { noremap=true, silent=true, buffer=bufnr }
+	keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
+	keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+	keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
+	keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
+	keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
+	keymap.set('n', 'tD', vim.lsp.buf.type_definition, bufopts)
+	keymap.set('n', 'rn', vim.lsp.buf.rename, bufopts)
+	keymap.set('n', 'ca', vim.lsp.buf.code_action, bufopts)
+	keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+	keymap.set('n', 'lf', function() vim.lsp.buf.format { async = true } end, bufopts)
+end
 
-map('', '<leader>n', ':NERDTreeToggle<CR>')
-map('', '<leader>f', ':NERDTreeFind<Space>')
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+capabilities.textDocument.completion.completionItem.snippetSupport=true
+
+require'lspconfig'.cssls.setup {
+	capabilities = capabilities,
+	on_attach = on_attach,
+}
+
+require'lspconfig'.eslint.setup({
+	on_attach = function(client, bufnr)
+		vim.api.nvim_create_autocmd("BufWritePre", {
+			buffer = bufnr,
+			command = "EslintFixAll",
+		})
+	end,
+})
+
+require'lspconfig'.intelephense.setup{
+	on_attach = on_attach,
+}
+
+require('lspconfig')['pyright'].setup{
+	on_attach = on_attach,
+}
+
+require('lspconfig')['tsserver'].setup{
+	on_attach = on_attach,
+}
+
+
+-- NvimTree
+opt.termguicolors=true
+
+map('n', '<leader>n', ':NvimTreeToggle<CR>')
+
+local function open_nvim_tree()
+	require("nvim-tree.api").tree.open()
+end
+
+api.nvim_create_autocmd({"VimEnter"}, {callback=open_nvim_tree})
+
+require("nvim-tree").setup({
+	view = {
+		width = 40,
+		mappings = {
+			list = {
+				{ key = "u", action = "dir_up" },
+			},
+		},
+	},
+	renderer = {
+		group_empty = true,
+	},
+})
+
+-- Telescope
+local builtin = require('telescope.builtin')
+keymap.set('n', '<leader>ff', builtin.find_files, {})
+keymap.set('n', '<leader>fg', builtin.live_grep, {})
+keymap.set('n', '<leader>fb', builtin.buffers, {})
+keymap.set('n', '<leader>fh', builtin.help_tags, {})
