@@ -13,8 +13,8 @@ local opt = vim.opt
 -----------------
 -- Initialization
 -----------------
-g.loaded_netrw = 1
-g.loaded_netrwPlugin = 1
+-- g.loaded_netrw = 1
+-- g.loaded_netrwPlugin = 1
 g.mapleader = ','
 
 opt.termguicolors = true
@@ -178,13 +178,13 @@ local on_attach = function(client, bufnr)
 	vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
 	local bufopts = { noremap=true, silent=true, buffer=bufnr }
-	keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
-	keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+	keymap.set('n', 'gD', function() vim.lsp.buf.declaration() { reuse_win=true } end, bufopts)
+	keymap.set('n', 'gd', function() vim.lsp.buf.definition { reuse_win=true } end, butopts)
 	keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
 	keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-	keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
-	keymap.set('n', 'tD', vim.lsp.buf.type_definition, bufopts)
 	keymap.set('n', 'rn', vim.lsp.buf.rename, bufopts)
+	keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
+	keymap.set('n', 'tD', function() vim.lsp.buf.type_definition { reuse_win=true } end, bufopts)
 	keymap.set('n', 'ca', vim.lsp.buf.code_action, bufopts)
 	keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
 	keymap.set('n', 'lf', function() vim.lsp.buf.format { async = true } end, bufopts)
@@ -218,6 +218,19 @@ require('lspconfig')['pyright'].setup{
 
 require('lspconfig')['tsserver'].setup{
 	on_attach = on_attach,
+	handlers = {
+		['textDocument/definition'] = function(err, result, method, ...)
+			local function filterReactDTS(value)
+				if not vim.tbl_islist(result) or type(result) ~= "table" then
+					return string.match(value.uri, 'react/index.d.ts') == nil
+				end
+
+				return { result[1] }
+			end
+
+			vim.lsp.handlers['textDocument/definition'](err, filterReactDTS(result), method, ...)
+			end
+	},
 }
 
 
@@ -225,6 +238,12 @@ require('lspconfig')['tsserver'].setup{
 opt.termguicolors=true
 
 map('n', '<leader>n', ':NvimTreeToggle<CR>')
+map('n', 'gf', ':NvimTreeFindFile<space>')
+map('n', '<leader>c', ':NvimTreeCollapse<CR>')
+map('n', '<leader>r', ':NvimTreeRefresh<CR>')
+vim.keymap.set("n", "<leader>mn", require("nvim-tree.api").marks.navigate.next)
+vim.keymap.set("n", "<leader>mp", require("nvim-tree.api").marks.navigate.prev)
+vim.keymap.set("n", "<leader>ms", require("nvim-tree.api").marks.navigate.select)
 
 local function open_nvim_tree()
 	require("nvim-tree.api").tree.open()
@@ -233,16 +252,33 @@ end
 api.nvim_create_autocmd({"VimEnter"}, {callback=open_nvim_tree})
 
 require("nvim-tree").setup({
-	view = {
-		width = 40,
-		mappings = {
-			list = {
-				{ key = "u", action = "dir_up" },
-			},
+	hijack_cursor=true,
+	hijack_unnamed_buffer_when_opening=true,
+	reload_on_bufenter=true,
+	renderer={
+		group_empty=true,
+		highlight_git=true,
+		highlight_opened_files='all',
+		highlight_modified='all',
+		icons={
+			git_placement='after',
+			modified_placement='after',
 		},
 	},
-	renderer = {
-		group_empty = true,
+	modified={
+		enable=true,
+	},
+	view={
+		hide_root_folder=true,
+		mappings={
+			list={
+				{key="u",action="dir_up"},
+			},
+		},
+		width={
+			min=20,
+			max=50,
+		},
 	},
 })
 
