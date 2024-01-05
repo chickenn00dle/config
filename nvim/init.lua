@@ -124,7 +124,6 @@ map('v', '<Space>', 'za')
 ----------
 local Plug = fn['plug#']
 call('plug#begin', '~/.config/nvim/plugged')
-Plug 'editorconfig/editorconfig-vim'
 Plug 'github/copilot.vim'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/plenary.nvim'
@@ -163,9 +162,6 @@ map('n', '<leader>9', '<Plug>AirlineSelectTab9')
 map('n', '<leader>0', '<Plug>AirlineSelectTab10')
 map('n', '<leader>-', '<Plug>AirlineSelectPrevTab')
 map('n', '<leader>+', '<Plug>AirlineSelectNextTab')
-
--- Fugitive
-g.github_enterprise_urls={'https://github.tumblr.net'}
 
 -- LSP
 local bufopts = { noremap=true, silent=true, buffer=bufnr }
