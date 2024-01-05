@@ -55,7 +55,6 @@ alias du='du -h'
 alias mkdir='mkdir -p'
 alias -s log='tail -f -n 50'
 alias topp='top -o cpu -s 3'
-alias source='source ~/.config/zsh/.zshrc'
 alias sites='cd ~/Sites'
 
 

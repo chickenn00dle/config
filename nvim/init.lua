@@ -9,7 +9,6 @@ local g = vim.g
 local keymap = vim.keymap
 local opt = vim.opt
 
-
 -----------------
 -- Initialization
 -----------------
@@ -24,13 +23,12 @@ cmd([[
 filetype plugin indent on
 colorscheme custom
 ]])
-
 ----------
 -- General
 ----------
-
 cmd([[
 set backspace=indent,eol,start
+set backupcopy=yes
 set clipboard=unnamed
 set completeopt=menu,menuone,noinsert,noselect
 set cursorline
@@ -95,7 +93,6 @@ set undolevels=9999
 -----------
 -- Key Maps
 -----------
-
 function map(mode, shortcut, command)
 	api.nvim_set_keymap(mode, shortcut, command, { noremap = true, silent = true })
 end
@@ -125,7 +122,6 @@ map('v', '<Space>', 'za')
 ----------
 -- Plugins
 ----------
-
 local Plug = fn['plug#']
 call('plug#begin', '~/.config/nvim/plugged')
 Plug 'editorconfig/editorconfig-vim'
@@ -135,6 +131,7 @@ Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-tree/nvim-tree.lua'
 Plug 'nvim-tree/nvim-web-devicons'
+Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'tomtom/tcomment_vim'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb'
@@ -171,33 +168,23 @@ map('n', '<leader>+', '<Plug>AirlineSelectNextTab')
 g.github_enterprise_urls={'https://github.tumblr.net'}
 
 -- LSP
-keymap.set('n', 'gp', vim.diagnostic.goto_prev, { noremap=true, silent=true })
-keymap.set('n', 'gn', vim.diagnostic.goto_next, { noremap=true, silent=true })
+local bufopts = { noremap=true, silent=true, buffer=bufnr }
+keymap.set('n', 'ca', vim.lsp.buf.code_action, bufopts)
+keymap.set('n', 'gd', vim.lsp.buf.definition, butopts)
+keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
+keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
+keymap.set('n', 'gn', vim.diagnostic.goto_next, bufopts)
+keymap.set('n', 'gp', vim.diagnostic.goto_prev, bufopts)
+keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
+keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
+keymap.set('n', 'lf', vim.lsp.buf.format, bufopts)
+keymap.set('n', 'rn', vim.lsp.buf.rename, bufopts)
+keymap.set('n', 'tD', vim.lsp.buf.type_definition, bufopts)
 
-local on_attach = function(client, bufnr)
-	vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+require'lspconfig'.bashls.setup{}
 
-	local bufopts = { noremap=true, silent=true, buffer=bufnr }
-	keymap.set('n', 'gD', function() vim.lsp.buf.declaration() { reuse_win=true } end, bufopts)
-	keymap.set('n', 'gd', function() vim.lsp.buf.definition { reuse_win=true } end, butopts)
-	keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-	keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-	keymap.set('n', 'rn', vim.lsp.buf.rename, bufopts)
-	keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
-	keymap.set('n', 'tD', function() vim.lsp.buf.type_definition { reuse_win=true } end, bufopts)
-	keymap.set('n', 'ca', vim.lsp.buf.code_action, bufopts)
-	keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-	keymap.set('n', 'lf', function() vim.lsp.buf.format { async = true } end, bufopts)
-end
-
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-
-capabilities.textDocument.completion.completionItem.snippetSupport=true
-
-require'lspconfig'.cssls.setup {
-	capabilities = capabilities,
-	on_attach = on_attach,
-}
+require'lspconfig'.cssls.setup {}
 
 require'lspconfig'.eslint.setup({
 	on_attach = function(client, bufnr)
@@ -209,15 +196,28 @@ require'lspconfig'.eslint.setup({
 })
 
 require'lspconfig'.intelephense.setup{
-	on_attach = on_attach,
+	settings = {
+		intelephense = {
+			stubs = {
+				"wordpress",
+				"wordpress-globals",
+				"woocommerce",
+				"woocommerce-packages",
+				"wp-cli",
+			},
+			environment = {
+				includePaths = '~/Stubs/'
+			},
+			files = {
+				maxSize = 5000000;
+			};
+		},
+	},
 }
 
-require('lspconfig')['pyright'].setup{
-	on_attach = on_attach,
-}
+require('lspconfig')['pyright'].setup{}
 
 require('lspconfig')['tsserver'].setup{
-	on_attach = on_attach,
 	handlers = {
 		['textDocument/definition'] = function(err, result, method, ...)
 			local function filterReactDTS(value)
@@ -229,10 +229,9 @@ require('lspconfig')['tsserver'].setup{
 			end
 
 			vim.lsp.handlers['textDocument/definition'](err, filterReactDTS(result), method, ...)
-			end
+		end
 	},
 }
-
 
 -- NvimTree
 opt.termguicolors=true
@@ -241,9 +240,6 @@ map('n', '<leader>n', ':NvimTreeToggle<CR>')
 map('n', 'gf', ':NvimTreeFindFile<space>')
 map('n', '<leader>c', ':NvimTreeCollapse<CR>')
 map('n', '<leader>r', ':NvimTreeRefresh<CR>')
-vim.keymap.set("n", "<leader>mn", require("nvim-tree.api").marks.navigate.next)
-vim.keymap.set("n", "<leader>mp", require("nvim-tree.api").marks.navigate.prev)
-vim.keymap.set("n", "<leader>ms", require("nvim-tree.api").marks.navigate.select)
 
 local function open_nvim_tree()
 	require("nvim-tree.api").tree.open()
@@ -252,29 +248,91 @@ end
 api.nvim_create_autocmd({"VimEnter"}, {callback=open_nvim_tree})
 
 require("nvim-tree").setup({
+	on_attach=function(bufnr)
+		local api = require('nvim-tree.api')
+
+		local function opts(desc)
+			return { desc = 'nvim-tree: ' .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+		end
+
+		vim.keymap.set('n', '<C-]>', api.tree.change_root_to_node,          opts('CD'))
+		vim.keymap.set('n', '<C-e>', api.node.open.replace_tree_buffer,     opts('Open: In Place'))
+		vim.keymap.set('n', '<C-k>', api.node.show_info_popup,              opts('Info'))
+		vim.keymap.set('n', '<C-r>', api.fs.rename_sub,                     opts('Rename: Omit Filename'))
+		vim.keymap.set('n', '<C-t>', api.node.open.tab,                     opts('Open: New Tab'))
+		vim.keymap.set('n', '<C-v>', api.node.open.vertical,                opts('Open: Vertical Split'))
+		vim.keymap.set('n', '<C-x>', api.node.open.horizontal,              opts('Open: Horizontal Split'))
+		vim.keymap.set('n', '<BS>',  api.node.navigate.parent_close,        opts('Close Directory'))
+		vim.keymap.set('n', '<CR>',  api.node.open.edit,                    opts('Open'))
+		vim.keymap.set('n', '<Tab>', api.node.open.preview,                 opts('Open Preview'))
+		vim.keymap.set('n', '>',     api.node.navigate.sibling.next,        opts('Next Sibling'))
+		vim.keymap.set('n', '<',     api.node.navigate.sibling.prev,        opts('Previous Sibling'))
+		vim.keymap.set('n', '.',     api.node.run.cmd,                      opts('Run Command'))
+		vim.keymap.set('n', '-',     api.tree.change_root_to_parent,        opts('Up'))
+		vim.keymap.set('n', 'a',     api.fs.create,                         opts('Create'))
+		vim.keymap.set('n', 'bmv',   api.marks.bulk.move,                   opts('Move Bookmarked'))
+		vim.keymap.set('n', 'B',     api.tree.toggle_no_buffer_filter,      opts('Toggle No Buffer'))
+		vim.keymap.set('n', 'c',     api.fs.copy.node,                      opts('Copy'))
+		vim.keymap.set('n', 'C',     api.tree.toggle_git_clean_filter,      opts('Toggle Git Clean'))
+		vim.keymap.set('n', '[c',    api.node.navigate.git.prev,            opts('Prev Git'))
+		vim.keymap.set('n', ']c',    api.node.navigate.git.next,            opts('Next Git'))
+		vim.keymap.set('n', 'd',     api.fs.remove,                         opts('Delete'))
+		vim.keymap.set('n', 'D',     api.fs.trash,                          opts('Trash'))
+		vim.keymap.set('n', 'E',     api.tree.expand_all,                   opts('Expand All'))
+		vim.keymap.set('n', 'e',     api.fs.rename_basename,                opts('Rename: Basename'))
+		vim.keymap.set('n', ']e',    api.node.navigate.diagnostics.next,    opts('Next Diagnostic'))
+		vim.keymap.set('n', '[e',    api.node.navigate.diagnostics.prev,    opts('Prev Diagnostic'))
+		vim.keymap.set('n', 'F',     api.live_filter.clear,                 opts('Clean Filter'))
+		vim.keymap.set('n', 'f',     api.live_filter.start,                 opts('Filter'))
+		vim.keymap.set('n', 'g?',    api.tree.toggle_help,                  opts('Help'))
+		vim.keymap.set('n', 'gy',    api.fs.copy.absolute_path,             opts('Copy Absolute Path'))
+		vim.keymap.set('n', 'H',     api.tree.toggle_hidden_filter,         opts('Toggle Dotfiles'))
+		vim.keymap.set('n', 'I',     api.tree.toggle_gitignore_filter,      opts('Toggle Git Ignore'))
+		vim.keymap.set('n', 'J',     api.node.navigate.sibling.last,        opts('Last Sibling'))
+		vim.keymap.set('n', 'K',     api.node.navigate.sibling.first,       opts('First Sibling'))
+		vim.keymap.set('n', 'm',     api.marks.toggle,                      opts('Toggle Bookmark'))
+		vim.keymap.set('n', 'o',     api.node.open.edit,                    opts('Open'))
+		vim.keymap.set('n', 'O',     api.node.open.no_window_picker,        opts('Open: No Window Picker'))
+		vim.keymap.set('n', 'p',     api.fs.paste,                          opts('Paste'))
+		vim.keymap.set('n', 'P',     api.node.navigate.parent,              opts('Parent Directory'))
+		vim.keymap.set('n', 'q',     api.tree.close,                        opts('Close'))
+		vim.keymap.set('n', 'r',     api.fs.rename,                         opts('Rename'))
+		vim.keymap.set('n', 'R',     api.tree.reload,                       opts('Refresh'))
+		vim.keymap.set('n', 's',     api.node.run.system,                   opts('Run System'))
+		vim.keymap.set('n', 'S',     api.tree.search_node,                  opts('Search'))
+		vim.keymap.set('n', 'U',     api.tree.toggle_custom_filter,         opts('Toggle Hidden'))
+		vim.keymap.set('n', 'W',     api.tree.collapse_all,                 opts('Collapse'))
+		vim.keymap.set('n', 'x',     api.fs.cut,                            opts('Cut'))
+		vim.keymap.set('n', 'y',     api.fs.copy.filename,                  opts('Copy Name'))
+		vim.keymap.set('n', 'Y',     api.fs.copy.relative_path,             opts('Copy Relative Path'))
+		vim.keymap.set('n', '<2-LeftMouse>',  api.node.open.edit,           opts('Open'))
+		vim.keymap.set('n', '<2-RightMouse>', api.tree.change_root_to_node, opts('CD'))
+		vim.keymap.set('n', '<leader>mn', require('nvim-tree.api').marks.navigate.next)
+		vim.keymap.set('n', '<leader>mp', require('nvim-tree.api').marks.navigate.prev)
+		vim.keymap.set('n', '<leader>ms', require('nvim-tree.api').marks.navigate.select)
+		vim.keymap.set('n', 'u', api.tree.change_root_to_parent, opts('Up'))
+	end,
+	filters={
+		git_ignored=false,
+	},
 	hijack_cursor=true,
 	hijack_unnamed_buffer_when_opening=true,
 	reload_on_bufenter=true,
 	renderer={
 		group_empty=true,
-		highlight_git=true,
+		highlight_git=false,
 		highlight_opened_files='all',
 		highlight_modified='all',
 		icons={
 			git_placement='after',
 			modified_placement='after',
 		},
+		root_folder_label=false,
 	},
 	modified={
 		enable=true,
 	},
 	view={
-		hide_root_folder=true,
-		mappings={
-			list={
-				{key="u",action="dir_up"},
-			},
-		},
 		width={
 			min=20,
 			max=50,
@@ -282,9 +340,11 @@ require("nvim-tree").setup({
 	},
 })
 
+
 -- Telescope
 local builtin = require('telescope.builtin')
+local utils = require('telescope.utils')
 keymap.set('n', '<leader>ff', builtin.find_files, {})
-keymap.set('n', '<leader>fg', builtin.live_grep, {})
+keymap.set('n', '<leader>fg', function() builtin.live_grep({cwd=utils.buffer_dir()}) end)
 keymap.set('n', '<leader>fb', builtin.buffers, {})
 keymap.set('n', '<leader>fh', builtin.help_tags, {})
