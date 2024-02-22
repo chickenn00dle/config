@@ -48,14 +48,12 @@ alias ...='cd ~'
 alias h='history'
 alias mv='mv -i'
 alias cp='cp -i'
+alias cpd='cp -r'
 alias rm='rm -i'
 alias rmd='rm -Rf'
-alias df='df -h'
-alias du='du -h'
 alias mkdir='mkdir -p'
-alias -s log='tail -f -n 50'
+alias tail='tail -f -n 50'
 alias topp='top -o cpu -s 3'
-alias sites='cd ~/Sites'
 
 
 #######

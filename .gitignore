@@ -23,11 +23,11 @@ preconfig.zsh
 
 # misc
 .mono
-valet
 configstore
-finicky
-profanity
-fish
+gh
 git/.privateconfig
 github-copilot
-gh
+phpactor
+profanity
+valet
+menus

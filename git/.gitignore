@@ -11,3 +11,4 @@ Icon
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
 *.log
+.phpactor.json

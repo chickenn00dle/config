@@ -125,12 +125,14 @@ map('v', '<Space>', 'za')
 local Plug = fn['plug#']
 call('plug#begin', '~/.config/nvim/plugged')
 Plug 'github/copilot.vim'
+Plug 'mfussenegger/nvim-dap'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-tree/nvim-tree.lua'
 Plug 'nvim-tree/nvim-web-devicons'
 Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'rcarriga/nvim-dap-ui'
 Plug 'tomtom/tcomment_vim'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb'
@@ -163,26 +165,71 @@ map('n', '<leader>0', '<Plug>AirlineSelectTab10')
 map('n', '<leader>-', '<Plug>AirlineSelectPrevTab')
 map('n', '<leader>+', '<Plug>AirlineSelectNextTab')
 
+
+-- DAP, DAP UI
+local dap = require("dap")
+local dapui = require("dapui")
+
+dap.adapters.php = {
+	type = 'executable',
+	command = 'node',
+	args = {  os.getenv("HOME") .. '/vscode-php-debug/out/phpDebug.js' }
+}
+dap.configurations.php = {
+	{
+		type = 'php',
+		request = 'launch',
+		name = 'Listen for Xdebug',
+		port = 9003
+	}
+}
+
+dapui.setup{}
+dap.listeners.before.attach.dapui_config = function()
+  dapui.open()
+end
+dap.listeners.before.launch.dapui_config = function()
+  dapui.open()
+end
+dap.listeners.before.event_terminated.dapui_config = function()
+  dapui.close()
+end
+dap.listeners.before.event_exited.dapui_config = function()
+  dapui.close()
+end
+
+keymap.set('n', '<F5>', function() dap.continue() end)
+keymap.set('n', '<Right>', function() dap.step_over() end)
+keymap.set('n', '<Down>', function() dap.step_into() end)
+keymap.set('n', '<Up>', function() dap.step_out() end)
+keymap.set('n', '<Leader>b', function() dap.toggle_breakpoint() end)
+keymap.set('n', '<Leader>B', function() dap.set_breakpoint() end)
+keymap.set('n', '<Leader>lp', function() dap.set_breakpoint(nil, nil, vim.fn.input('Log point message: ')) end)
+keymap.set('n', '<Leader>dr', function() dap.repl.open() end)
+keymap.set('n', '<Leader>dl', function() dap.run_last() end)
+keymap.set({'n', 'v'}, '<Leader>dh', function()
+  require('dap.ui.widgets').hover()
+end)
+keymap.set({'n', 'v'}, '<Leader>dp', function()
+  require('dap.ui.widgets').preview()
+end)
+keymap.set('n', '<Leader>df', function()
+  local widgets = require('dap.ui.widgets')
+  widgets.centered_float(widgets.frames)
+end)
+keymap.set('n', '<Leader>ds', function()
+  local widgets = require('dap.ui.widgets')
+  widgets.centered_float(widgets.scopes)
+end)
+
+
 -- LSP
-local bufopts = { noremap=true, silent=true, buffer=bufnr }
-keymap.set('n', 'ca', vim.lsp.buf.code_action, bufopts)
-keymap.set('n', 'gd', vim.lsp.buf.definition, butopts)
-keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
-keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-keymap.set('n', 'gn', vim.diagnostic.goto_next, bufopts)
-keymap.set('n', 'gp', vim.diagnostic.goto_prev, bufopts)
-keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
-keymap.set('n', 'lf', vim.lsp.buf.format, bufopts)
-keymap.set('n', 'rn', vim.lsp.buf.rename, bufopts)
-keymap.set('n', 'tD', vim.lsp.buf.type_definition, bufopts)
-
-require'lspconfig'.bashls.setup{}
-
-require'lspconfig'.cssls.setup {}
-
-require'lspconfig'.eslint.setup({
+local lspconfig = require('lspconfig')
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+lspconfig.bashls.setup{ capabilities = capabilities }
+lspconfig.cssls.setup{ capabilities = capabilities }
+lspconfig.eslint.setup({
+	capabilities = capabilities,
 	on_attach = function(client, bufnr)
 		vim.api.nvim_create_autocmd("BufWritePre", {
 			buffer = bufnr,
@@ -190,44 +237,31 @@ require'lspconfig'.eslint.setup({
 		})
 	end,
 })
+lspconfig.phpactor.setup{ capabilities = capabilities }
+lspconfig.pyright.setup{ capabilities = capabilities }
 
-require'lspconfig'.intelephense.setup{
-	settings = {
-		intelephense = {
-			stubs = {
-				"wordpress",
-				"wordpress-globals",
-				"woocommerce",
-				"woocommerce-packages",
-				"wp-cli",
-			},
-			environment = {
-				includePaths = '~/Stubs/'
-			},
-			files = {
-				maxSize = 5000000;
-			};
-		},
-	},
-}
+keymap.set('n', 'gn', vim.diagnostic.goto_next)
+keymap.set('n', 'gp', vim.diagnostic.goto_prev)
+keymap.set('n', '<space>e', vim.diagnostic.open_float)
+keymap.set('n', '<space>q', vim.diagnostic.setloclist)
 
-require('lspconfig')['pyright'].setup{}
+vim.api.nvim_create_autocmd('LspAttach', {
+	group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+	callback = function()
+		local bufopts = { noremap=true, silent=true, buffer=bufnr }
+		keymap.set('n', 'ca', vim.lsp.buf.code_action, bufopts)
+		keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+		keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
+		keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
+		keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+		keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
+		keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
+		keymap.set('n', 'cf', vim.lsp.buf.format, bufopts)
+		keymap.set('n', 'rn', vim.lsp.buf.rename, bufopts)
+		keymap.set('n', 'gtd', vim.lsp.buf.type_definition, bufopts)
+	end,
+})
 
-require('lspconfig')['tsserver'].setup{
-	handlers = {
-		['textDocument/definition'] = function(err, result, method, ...)
-			local function filterReactDTS(value)
-				if not vim.tbl_islist(result) or type(result) ~= "table" then
-					return string.match(value.uri, 'react/index.d.ts') == nil
-				end
-
-				return { result[1] }
-			end
-
-			vim.lsp.handlers['textDocument/definition'](err, filterReactDTS(result), method, ...)
-		end
-	},
-}
 
 -- NvimTree
 opt.termguicolors=true
@@ -340,6 +374,7 @@ require("nvim-tree").setup({
 -- Telescope
 local builtin = require('telescope.builtin')
 local utils = require('telescope.utils')
+
 keymap.set('n', '<leader>ff', builtin.find_files, {})
 keymap.set('n', '<leader>fg', function() builtin.live_grep({cwd=utils.buffer_dir()}) end)
 keymap.set('n', '<leader>fb', builtin.buffers, {})

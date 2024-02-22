@@ -11,8 +11,8 @@
 [color]
 	ui = true
 [core]
-	editor = nvim
 	excludesFile = ~/.config/git/.gitignore
+	editor = nvim
 [credential]
 	helper = osxkeychain
 [filter "gitignore"]
@@ -20,10 +20,8 @@
 	smudge = cat
 [init]
 	defaultBranch = main
-[pull]
-	rebase = false
-[submodule]
-	recurse = true
 [user]
 	name = Rasmy Nguyen
 	email = rtnguyen87@gmail.com
+[pull]
+	rebase = true
