@@ -202,6 +202,7 @@ keymap.set('n', '<F5>', function() dap.continue() end)
 keymap.set('n', '<Right>', function() dap.step_over() end)
 keymap.set('n', '<Down>', function() dap.step_into() end)
 keymap.set('n', '<Up>', function() dap.step_out() end)
+keymap.set('n', '<Leader>t', function() dapui.toggle() end)
 keymap.set('n', '<Leader>b', function() dap.toggle_breakpoint() end)
 keymap.set('n', '<Leader>B', function() dap.set_breakpoint() end)
 keymap.set('n', '<Leader>lp', function() dap.set_breakpoint(nil, nil, vim.fn.input('Log point message: ')) end)
@@ -228,7 +229,7 @@ local lspconfig = require('lspconfig')
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 lspconfig.bashls.setup{ capabilities = capabilities }
 lspconfig.cssls.setup{ capabilities = capabilities }
-lspconfig.eslint.setup({
+lspconfig.eslint.setup{
 	capabilities = capabilities,
 	on_attach = function(client, bufnr)
 		vim.api.nvim_create_autocmd("BufWritePre", {
@@ -236,8 +237,20 @@ lspconfig.eslint.setup({
 			command = "EslintFixAll",
 		})
 	end,
-})
-lspconfig.phpactor.setup{ capabilities = capabilities }
+}
+lspconfig.phpactor.setup{
+	capabilities = capabilities,
+	init_options = {
+		["$schema"] = "/Users/raz/phpactor/phpactor.schema.json",
+		["language_server.phpactor_bin"] = "/usr/local/bin/phpactor",
+		["php_code_sniffer.enabled"] = true,
+		["phpunit.enabled"] = true,
+		["indexer.follow_symlinks"] = true,
+		["indexer.stub_paths"] = {
+			"/Users/raz/Stubs"
+		}
+	}
+}
 lspconfig.pyright.setup{ capabilities = capabilities }
 
 keymap.set('n', 'gn', vim.diagnostic.goto_next)
