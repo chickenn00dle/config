@@ -128,10 +128,12 @@ Plug 'github/copilot.vim'
 Plug 'mfussenegger/nvim-dap'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-neotest/nvim-nio'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-tree/nvim-tree.lua'
 Plug 'nvim-tree/nvim-web-devicons'
 Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'praem90/nvim-phpcsf'
 Plug 'rcarriga/nvim-dap-ui'
 Plug 'tomtom/tcomment_vim'
 Plug 'tpope/vim-fugitive'
@@ -143,6 +145,7 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'vim-scripts/matchit.zip'
 call('plug#end')
 
+
 -- Airline
 g.airline_theme='minimalist'
 g['airline#extensions#ale#enabled']=1
@@ -151,7 +154,6 @@ g['airline#extensions#tabline#formatter']='unique_tail'
 g['airline#extensions#tabline#buffers_label']=''
 g['airline#extensions#tabline#tabs_label']=''
 g['airline#extensions#tabline#buffer_idx_mode']=1
-
 map('n', '<leader>1', '<Plug>AirlineSelectTab1')
 map('n', '<leader>2', '<Plug>AirlineSelectTab2')
 map('n', '<leader>3', '<Plug>AirlineSelectTab3')
@@ -169,7 +171,6 @@ map('n', '<leader>+', '<Plug>AirlineSelectNextTab')
 -- DAP, DAP UI
 local dap = require("dap")
 local dapui = require("dapui")
-
 dap.adapters.php = {
 	type = 'executable',
 	command = 'node',
@@ -183,7 +184,6 @@ dap.configurations.php = {
 		port = 9003
 	}
 }
-
 dapui.setup{}
 dap.listeners.before.attach.dapui_config = function()
   dapui.open()
@@ -197,7 +197,6 @@ end
 dap.listeners.before.event_exited.dapui_config = function()
   dapui.close()
 end
-
 keymap.set('n', '<F5>', function() dap.continue() end)
 keymap.set('n', '<Right>', function() dap.step_over() end)
 keymap.set('n', '<Down>', function() dap.step_into() end)
@@ -238,26 +237,50 @@ lspconfig.eslint.setup{
 		})
 	end,
 }
-lspconfig.phpactor.setup{
+lspconfig.intelephense.setup{
 	capabilities = capabilities,
-	init_options = {
-		["$schema"] = "/Users/raz/phpactor/phpactor.schema.json",
-		["language_server.phpactor_bin"] = "/usr/local/bin/phpactor",
-		["php_code_sniffer.enabled"] = true,
-		["phpunit.enabled"] = true,
-		["indexer.follow_symlinks"] = true,
-		["indexer.stub_paths"] = {
-			"/Users/raz/Stubs"
-		}
-	}
+	settings = {
+		intelephense = {
+			completion = {
+				insertUseDeclaration = true,
+			},
+			environment = {
+				includePaths = {
+					"/Users/raz/Sites/newspack/ads",
+					"/Users/raz/Sites/newspack/block-theme",
+					"/Users/raz/Sites/newspack/blocks",
+					"/Users/raz/Sites/newspack/listings",
+					"/Users/raz/Sites/newspack/manager",
+					"/Users/raz/Sites/newspack/manager-client",
+					"/Users/raz/Sites/newspack/network",
+					"/Users/raz/Sites/newspack/newsletters",
+					"/Users/raz/Sites/newspack/plugin",
+					"/Users/raz/Sites/newspack/popups",
+					"/Users/raz/Sites/newspack/scripts",
+					"/Users/raz/Sites/newspack/sponsors",
+					"/Users/raz/Sites/newspack/super-cool-ad-inserter-plugin",
+					"/Users/raz/Sites/newspack/theme",
+				},
+			},
+			format = {
+				enable = false,
+			},
+			stubs = {
+				"Core",
+				"standard",
+				"wordpress",
+				"/Users/raz/Stubs/woocommerce",
+				"/Users/raz/Stubs/woocommerce-packages",
+				"/Users/raz/Stubs/wp-cli",
+			},
+		},
+	},
 }
 lspconfig.pyright.setup{ capabilities = capabilities }
-
 keymap.set('n', 'gn', vim.diagnostic.goto_next)
 keymap.set('n', 'gp', vim.diagnostic.goto_prev)
 keymap.set('n', '<space>e', vim.diagnostic.open_float)
 keymap.set('n', '<space>q', vim.diagnostic.setloclist)
-
 vim.api.nvim_create_autocmd('LspAttach', {
 	group = vim.api.nvim_create_augroup('UserLspConfig', {}),
 	callback = function()
@@ -278,18 +301,16 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 -- NvimTree
 opt.termguicolors=true
-
 map('n', '<leader>n', ':NvimTreeToggle<CR>')
 map('n', 'gf', ':NvimTreeFindFile<space>')
 map('n', '<leader>c', ':NvimTreeCollapse<CR>')
 map('n', '<leader>r', ':NvimTreeRefresh<CR>')
-
 local function open_nvim_tree()
 	require("nvim-tree.api").tree.open()
 end
-
-api.nvim_create_autocmd({"VimEnter"}, {callback=open_nvim_tree})
-
+api.nvim_create_autocmd({"VimEnter"}, {
+	callback=open_nvim_tree
+})
 require("nvim-tree").setup({
 	on_attach=function(bufnr)
 		local api = require('nvim-tree.api')
@@ -384,10 +405,32 @@ require("nvim-tree").setup({
 })
 
 
+-- PHP Code Sniffer
+require("phpcs").setup({
+  phpcs = "phpcs",
+  phpcbf = "phpcbf",
+  standard = "PSR12"
+})
+local PhbscfGroup = vim.api.nvim_create_augroup('PHBSCF', {})
+vim.api.nvim_create_autocmd({"BufWritePost", "BufReadPost", "InsertLeave"}, {
+	group = PhbscfGroup,
+	pattern = '*.php',
+	callback = function()
+		require("phpcs").cs()
+	end,
+})
+vim.api.nvim_create_autocmd({"BufWritePost"}, {
+	group = PhbscfGroup,
+	pattern = '*.php',
+	callback = function()
+		require("phpcs").cbf()
+	end,
+})
+
+
 -- Telescope
 local builtin = require('telescope.builtin')
 local utils = require('telescope.utils')
-
 keymap.set('n', '<leader>ff', builtin.find_files, {})
 keymap.set('n', '<leader>fg', function() builtin.live_grep({cwd=utils.buffer_dir()}) end)
 keymap.set('n', '<leader>fb', builtin.buffers, {})
