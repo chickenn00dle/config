@@ -244,6 +244,9 @@ lspconfig.intelephense.setup{
 			completion = {
 				insertUseDeclaration = true,
 			},
+			diagnostics = {
+				enable = false,
+			},
 			environment = {
 				includePaths = {
 					"/Users/raz/Sites/newspack/ads",
@@ -261,6 +264,9 @@ lspconfig.intelephense.setup{
 					"/Users/raz/Sites/newspack/super-cool-ad-inserter-plugin",
 					"/Users/raz/Sites/newspack/theme",
 				},
+			},
+			files = {
+				maxSize = 10000000,
 			},
 			format = {
 				enable = false,
@@ -301,16 +307,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 -- NvimTree
 opt.termguicolors=true
-map('n', '<leader>n', ':NvimTreeToggle<CR>')
-map('n', 'gf', ':NvimTreeFindFile<space>')
-map('n', '<leader>c', ':NvimTreeCollapse<CR>')
-map('n', '<leader>r', ':NvimTreeRefresh<CR>')
-local function open_nvim_tree()
-	require("nvim-tree.api").tree.open()
-end
-api.nvim_create_autocmd({"VimEnter"}, {
-	callback=open_nvim_tree
-})
 require("nvim-tree").setup({
 	on_attach=function(bufnr)
 		local api = require('nvim-tree.api')
@@ -403,29 +399,33 @@ require("nvim-tree").setup({
 		},
 	},
 })
+map('n', '<leader>n', ':NvimTreeToggle<CR>')
+map('n', 'gf', ':NvimTreeFindFile<space>')
+map('n', '<leader>c', ':NvimTreeCollapse<CR>')
+map('n', '<leader>r', ':NvimTreeRefresh<CR>')
+api.nvim_create_autocmd({"VimEnter"}, {
+	callback=function()
+		require("nvim-tree.api").tree.open()
+	end,
+})
 
 
 -- PHP Code Sniffer
-require("phpcs").setup({
-  phpcs = "phpcs",
-  phpcbf = "phpcbf",
-  standard = "PSR12"
+require("phpcs").setup{
+	-- Global options
+	-- phpcs = os.getenv("HOME") .. "/.composer/vendor/bin/phpcs",
+	-- phpcbf = os.getenv("HOME") .. "/.composer/vendor/bin/phpcbf",
+	-- standard = 'wordpress',
+}
+local PHPCSGroup = vim.api.nvim_create_augroup('PHBSCF', {})
+vim.api.nvim_create_autocmd({'BufReadPost', 'BufWritePost', 'InsertLeave'}, {
+	group=PHPCSGroup,
+	pattern='*.php',
+    callback=function()
+    	require("phpcs").cs()
+    end,
 })
-local PhbscfGroup = vim.api.nvim_create_augroup('PHBSCF', {})
-vim.api.nvim_create_autocmd({"BufWritePost", "BufReadPost", "InsertLeave"}, {
-	group = PhbscfGroup,
-	pattern = '*.php',
-	callback = function()
-		require("phpcs").cs()
-	end,
-})
-vim.api.nvim_create_autocmd({"BufWritePost"}, {
-	group = PhbscfGroup,
-	pattern = '*.php',
-	callback = function()
-		require("phpcs").cbf()
-	end,
-})
+map('n', 'phpf', ":lua require'phpcs'.cbf({ force=true })<Enter>")
 
 
 -- Telescope
