@@ -124,10 +124,8 @@ map('v', '<Space>', 'za')
 ----------
 local Plug = fn['plug#']
 call('plug#begin', '~/.config/nvim/plugged')
-Plug 'github/copilot.vim'
 Plug 'mfussenegger/nvim-dap'
 Plug 'neovim/nvim-lspconfig'
-Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-neotest/nvim-nio'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-tree/nvim-tree.lua'
@@ -143,6 +141,9 @@ Plug 'tpope/vim-vinegar'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'vim-scripts/matchit.zip'
+Plug 'github/copilot.vim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'CopilotC-Nvim/CopilotChat.nvim'
 call('plug#end')
 
 
@@ -167,6 +168,10 @@ map('n', '<leader>0', '<Plug>AirlineSelectTab10')
 map('n', '<leader>-', '<Plug>AirlineSelectPrevTab')
 map('n', '<leader>+', '<Plug>AirlineSelectNextTab')
 
+
+-- Copilot
+require("CopilotChat").setup{}
+map('n', '<Leader>cp', ':CopilotChatToggle<CR>')
 
 -- DAP, DAP UI
 local dap = require("dap")
@@ -197,13 +202,12 @@ end
 dap.listeners.before.event_exited.dapui_config = function()
   dapui.close()
 end
-keymap.set('n', '<F5>', function() dap.continue() end)
+keymap.set('n', '<Leader>dd', function() dap.continue() end)
 keymap.set('n', '<Right>', function() dap.step_over() end)
 keymap.set('n', '<Down>', function() dap.step_into() end)
 keymap.set('n', '<Up>', function() dap.step_out() end)
 keymap.set('n', '<Leader>t', function() dapui.toggle() end)
 keymap.set('n', '<Leader>b', function() dap.toggle_breakpoint() end)
-keymap.set('n', '<Leader>B', function() dap.set_breakpoint() end)
 keymap.set('n', '<Leader>lp', function() dap.set_breakpoint(nil, nil, vim.fn.input('Log point message: ')) end)
 keymap.set('n', '<Leader>dr', function() dap.repl.open() end)
 keymap.set('n', '<Leader>dl', function() dap.run_last() end)
@@ -224,21 +228,19 @@ end)
 
 
 -- LSP
-local lspconfig = require('lspconfig')
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-lspconfig.bashls.setup{ capabilities = capabilities }
-lspconfig.cssls.setup{ capabilities = capabilities }
-lspconfig.eslint.setup{
-	capabilities = capabilities,
-	on_attach = function(client, bufnr)
+local base_on_attach = vim.lsp.config.eslint.on_attach
+vim.lsp.config("eslint", {
+	on_attach=function(client, bufnr)
+		if not base_on_attach then return end
+
+		base_on_attach(client, bufnr)
 		vim.api.nvim_create_autocmd("BufWritePre", {
 			buffer = bufnr,
-			command = "EslintFixAll",
+			command = "LspEslintFixAll",
 		})
 	end,
-}
-lspconfig.intelephense.setup{
-	capabilities = capabilities,
+})
+vim.lsp.config("intelephense", {
 	settings = {
 		intelephense = {
 			completion = {
@@ -276,13 +278,17 @@ lspconfig.intelephense.setup{
 				"standard",
 				"wordpress",
 				"/Users/raz/Stubs/woocommerce",
-				"/Users/raz/Stubs/woocommerce-packages",
-				"/Users/raz/Stubs/wp-cli",
+				"/Users/raz/Stubs/woocommerce-subscriptions",
 			},
+			maxMemory = 512,
 		},
 	},
-}
-lspconfig.pyright.setup{ capabilities = capabilities }
+})
+vim.lsp.enable("bashls")
+vim.lsp.enable("cssls")
+vim.lsp.enable("eslint")
+vim.lsp.enable("intelephense")
+vim.lsp.enable("pyright")
 keymap.set('n', 'gn', vim.diagnostic.goto_next)
 keymap.set('n', 'gp', vim.diagnostic.goto_prev)
 keymap.set('n', '<space>e', vim.diagnostic.open_float)
@@ -302,6 +308,12 @@ vim.api.nvim_create_autocmd('LspAttach', {
 		keymap.set('n', 'rn', vim.lsp.buf.rename, bufopts)
 		keymap.set('n', 'gtd', vim.lsp.buf.type_definition, bufopts)
 	end,
+})
+vim.api.nvim_create_autocmd('FileType', {
+    pattern = { 'qf', 'help', 'checkhealth', 'lspinfo' },
+    callback = function()
+        vim.keymap.set('n', '<CR>', '<CR>:cclose<CR>', { silent = true, buffer = true })
+    end,
 })
 
 
@@ -408,14 +420,15 @@ api.nvim_create_autocmd({"VimEnter"}, {
 		require("nvim-tree.api").tree.open()
 	end,
 })
+require'nvim-web-devicons'.setup{ default=true }
 
 
 -- PHP Code Sniffer
 require("phpcs").setup{
 	-- Global options
-	-- phpcs = os.getenv("HOME") .. "/.composer/vendor/bin/phpcs",
-	-- phpcbf = os.getenv("HOME") .. "/.composer/vendor/bin/phpcbf",
-	-- standard = 'wordpress',
+	phpcs = os.getenv("HOME") .. "/.composer/vendor/bin/phpcs",
+	phpcbf = os.getenv("HOME") .. "/.composer/vendor/bin/phpcbf",
+	standard = 'wordpress',
 }
 local PHPCSGroup = vim.api.nvim_create_augroup('PHBSCF', {})
 vim.api.nvim_create_autocmd({'BufReadPost', 'BufWritePost', 'InsertLeave'}, {
@@ -429,6 +442,19 @@ map('n', 'phpf', ":lua require'phpcs'.cbf({ force=true })<Enter>")
 
 
 -- Telescope
+require('telescope').setup{
+	defaults={
+		file_ignore_patterns={
+			'dist/*',
+			'vendor/*',
+			'node_modules/*',
+			'.git/*',
+			'languages/*',
+			'sites/*',
+			'wpcloud-externals/*',
+		},
+	},
+}
 local builtin = require('telescope.builtin')
 local utils = require('telescope.utils')
 keymap.set('n', '<leader>ff', builtin.find_files, {})

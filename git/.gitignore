@@ -12,3 +12,11 @@ Icon
 .com.apple.timemachine.donotpresent
 *.log
 .phpactor.json
+.claude
+package-lock.json
+.settings.local.json
+.claude.json
+.mcp.json
+**/.claude/settings.local.json
+AGENTS.md
+CLAUDE.md

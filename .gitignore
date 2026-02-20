@@ -25,9 +25,13 @@ preconfig.zsh
 .mono
 configstore
 gh
+gh-copilot
 git/.privateconfig
 github-copilot
 phpactor
 profanity
 valet
 menus
+code-assistant
+cagent
+knife*

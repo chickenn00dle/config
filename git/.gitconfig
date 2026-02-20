@@ -13,8 +13,6 @@
 [core]
 	excludesFile = ~/.config/git/.gitignore
 	editor = nvim
-[credential]
-	helper = osxkeychain
 [filter "gitignore"]
 	clean = "sed '/\"gitignore$/d'"
 	smudge = cat

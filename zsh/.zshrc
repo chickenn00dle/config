@@ -52,7 +52,7 @@ alias cpd='cp -r'
 alias rm='rm -i'
 alias rmd='rm -Rf'
 alias mkdir='mkdir -p'
-alias tail='tail -f -n 50'
+alias tail='tail -f -n 100'
 alias topp='top -o cpu -s 3'
 
 
