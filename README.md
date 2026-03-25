@@ -11,7 +11,7 @@ cd ~
 git clone https://github.com/chickenn00dle/config.git .config
 ln -s ~/.config/zsh/.zshenv ~/.zshenv
 ln -s ~/.config/zsh/.zshrc ~/.zshrc
-ln -s ~/.config/tmux/.tmux.conf ~/.tmux.conf
+ln -s ~/.config/zsh/.inputrc ~/.inputrc
 ln -s ~/.config/git/.gitconfig ~/.gitconfig
 source ~/.zshenv
 source ~/.zshrc
@@ -22,10 +22,6 @@ source ~/.zshrc
 ### ZSH
 
 Customizations can be added directly to `~/.config/zsh/.zshrc`. Alternatively, you can create a custom config file which must be named `~/.config/zsh/config.zsh` and make additions here.
-
-### TMUX
-
-You will first need to [install TMUX](https://github.com/tmux/tmux#installation). You can also install with [Homebrew](https://formulae.brew.sh/formula/tmux). Once installed, plugins will automatically be installed when Tmux is first opened. Customizations can be added directly to `~/.config/tmux/.tmux.conf`.
 
 ### NVIM
 
