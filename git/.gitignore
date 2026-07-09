@@ -1,3 +1,4 @@
+# System
 .DS_Store
 .AppleDouble
 .LSOverride
@@ -11,9 +12,15 @@ Icon
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
 *.log
+
+# Projects
 .phpactor.json
-.claude
 package-lock.json
+
+# AI
+.claude
 .settings.local.json
 .mcp.json
 .memorybank
+docs
+.superpowers
