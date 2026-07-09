@@ -8,11 +8,6 @@ undo/*
 .netrwhist
 nvim/coc-settings.json
 
-# tmux
-resurrect
-plugins
-*.log
-
 # zsh
 config.zsh
 preconfig.zsh
@@ -37,3 +32,4 @@ cagent
 knife*
 iterm2
 newspack
+*.log
